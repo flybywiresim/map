@@ -80,7 +80,16 @@ const Flights = (props: any) => {
                                 style="font-size: 1.75rem; color: #00c2cb ;transform-origin: center; transform: rotate(${flight.heading}deg);" 
                                 class="material-icons">flight</i>`
                         })}
-                    />
+                    >
+                        <Popup>
+                            {
+                                !((flight.origin === "") || (flight.destination === "")) ?
+                                    "Flight " + flight.flight + " flying from " + flight.origin + " to " + flight.destination
+                                    :
+                                    !(flight.flight === "") ? "Flight " + flight.flight : flight.aircraftType
+                            }
+                        </Popup>
+                    </Marker>
                 )
             }
         </div>
