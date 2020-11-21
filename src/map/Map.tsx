@@ -6,17 +6,13 @@ import {NXApi, Paginated, Telex, TelexConnection} from "@flybywiresim/api-client
 
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
-import flight from "material-design-icons/maps/svg/production/ic_flight_48px.svg";
+import flightIcon from "material-design-icons/maps/svg/production/ic_flight_48px.svg";
 
 const TelexConnectionsEmpty: Paginated<TelexConnection> = {
     count: 0,
     results: [],
     total: 0
 };
-
-const planeIcon = new L.Icon({
-    iconUrl: flight
-});
 
 type MapProps = {}
 
@@ -44,7 +40,7 @@ export const Map = (props: MapProps) => {
             <MapContainer
                 id="mapid"
                 center={[51.505, -0.09]}
-                zoom={13}
+                zoom={5}
                 scrollWheelZoom={true}>
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -55,11 +51,13 @@ export const Map = (props: MapProps) => {
                         flights.results.map((flight: TelexConnection) =>
                             <Marker
                                 position={[flight.location.y, flight.location.x]}
-                                icon={planeIcon}
+                                icon={ new L.Icon({
+                                    iconUrl: flightIcon,
+                                    className: "planeIcon",
+                                })}
                             />
                         )
                     }
-
                 </div>
 
             </MapContainer>
