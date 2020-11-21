@@ -14,14 +14,45 @@ const TelexConnectionsEmpty: Paginated<TelexConnection> = {
     total: 0
 };
 
-type MapProps = {}
+type MapProps = {
+    darkMode: boolean,
+}
 
 export const Map = (props: MapProps) => {
+    return (
+        <div>
+            <MapContainer
+                id="mapid"
+                center={[51.505, -0.09]}
+                zoom={5}
+                scrollWheelZoom={true}>
+                {
+                    props.darkMode ?
+                        <>
+                            <TileLayer
+                                attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+                                url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'
+                            />
+                        </>
+                        :
+                        <>
+                            <TileLayer
+                                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                        </>
+                }
+                <Flights />
+            </MapContainer>
+        </div>
+    );
+};
+
+const Flights = (props: any) => {
+
     const [flights, setFlights] = useState<Paginated<TelexConnection>>(TelexConnectionsEmpty);
 
     function getLocationData() {
-        NXApi.url = new URL('https://fbw.stonelabs.io');
-
         return Telex.fetchConnections(0, 100)
             .then(result =>{
                 setFlights(result);
@@ -37,36 +68,21 @@ export const Map = (props: MapProps) => {
 
     return (
         <div>
-            <MapContainer
-                id="mapid"
-                center={[51.505, -0.09]}
-                zoom={5}
-                scrollWheelZoom={true}>
-                <TileLayer
-                    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <div>
-                    {
-                        flights.results.map((flight: TelexConnection) =>
-                            <Marker
-                                position={[flight.location.y, flight.location.x]}
-                                icon={ L.divIcon({
-                                    iconSize: [20, 20],
-                                    iconAnchor: [10, 10],
-                                    className: 'planeIcon',
-                                    html: `<img 
-                                    style="transform-origin: center; transform: rotate(${flight.heading}deg);"
-                                    height="40rem" 
-                                    width="40rem" 
-                                    src='${flightIcon}'>`
-                                })}
-                            />
-                        )
-                    }
-                </div>
-
-            </MapContainer>
+            {
+                flights.results.map((flight: TelexConnection) =>
+                    <Marker
+                        position={[flight.location.y, flight.location.x]}
+                        icon={ L.divIcon({
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10],
+                            className: 'planeIcon',
+                            html: `<i 
+                                style="font-size: 1.75rem; color: #00c2cb ;transform-origin: center; transform: rotate(${flight.heading}deg);" 
+                                class="material-icons">flight</i>`
+                        })}
+                    />
+                )
+            }
         </div>
     );
 };
