@@ -48,26 +48,18 @@ export const Map = (props: MapProps) => {
     );
 };
 
-const Flights = (props: any) => {
+const Flights = () => {
 
     const [flights, setFlights] = useState<Paginated<TelexConnection>>(TelexConnectionsEmpty);
     const [tempFlights, setTempFlights] = useState<Paginated<TelexConnection>>(TelexConnectionsEmpty);
 
     function getLocationData() {
-        Telex.fetchConnections(0, 100)
-            .then(result =>{
-                setFlights(result);
-            })
-            .catch(() => {
-                setFlights(TelexConnectionsEmpty);
-            });
+        const flightsCombiner = TelexConnectionsEmpty;
+        let skip = 0;
+        let totalFetched = 0;
+        let total;
 
-        const flightsCombiner = flights;
-        const total = flights.total;
-        let totalFetched = flights.count;
-        let skip = 100;
-
-        while (total > totalFetched) {
+        do {
             console.log("iter");
             Telex.fetchConnections(skip, 100)
                 .then(result => {
@@ -76,16 +68,23 @@ const Flights = (props: any) => {
                 .catch(() => {
                     setTempFlights(TelexConnectionsEmpty);
                 });
+            total = flights.total;
             totalFetched += 100;
             skip += 100;
             flightsCombiner.results.concat(tempFlights.results);
         }
+        while (total > totalFetched);
+
         console.log(totalFetched);
+        console.log(total);
         setFlights(flightsCombiner);
     }
 
     useEffect(() => {
+        const interval = setInterval(() => {}, 10000);
         getLocationData();
+
+        return () => clearInterval(interval);
     }, []);
 
     return (
