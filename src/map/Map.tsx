@@ -37,8 +37,8 @@ export const Map = (props: MapProps) => {
                         :
                         <>
                             <TileLayer
-                                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+                                url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'
                             />
                         </>
                 }
@@ -79,8 +79,7 @@ const Flights = (props: any) => {
                             html: `<i 
                                 style="font-size: 1.75rem; color: #00c2cb ;transform-origin: center; transform: rotate(${flight.heading}deg);" 
                                 class="material-icons">flight</i>`
-                        })}
-                    >
+                        })}>
                         <Popup>
                             {
                                 !((flight.origin === "") || (flight.destination === "")) ?
