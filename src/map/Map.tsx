@@ -56,9 +56,9 @@ export const Map = (props: MapProps) => {
                                     iconAnchor: [10, 10],
                                     className: 'planeIcon',
                                     html: `<img 
-                                    style="transform: rotate(${flight.heading}deg);"
-                                    height="20" 
-                                    width="20" 
+                                    style="transform-origin: center; transform: rotate(${flight.heading}deg);"
+                                    height="40rem" 
+                                    width="40rem" 
                                     src='${flightIcon}'>`
                                 })}
                             />
