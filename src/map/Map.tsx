@@ -51,9 +51,15 @@ export const Map = (props: MapProps) => {
                         flights.results.map((flight: TelexConnection) =>
                             <Marker
                                 position={[flight.location.y, flight.location.x]}
-                                icon={ new L.Icon({
-                                    iconUrl: flightIcon,
-                                    className: "planeIcon",
+                                icon={ L.divIcon({
+                                    iconSize: [20, 20],
+                                    iconAnchor: [10, 10],
+                                    className: 'planeIcon',
+                                    html: `<img 
+                                    style="transform: rotate(${flight.heading}deg);"
+                                    height="20" 
+                                    width="20" 
+                                    src='${flightIcon}'>`
                                 })}
                             />
                         )
