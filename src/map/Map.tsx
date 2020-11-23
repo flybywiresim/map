@@ -1,5 +1,5 @@
 import React from "react";
-import {TileLayer, MapContainer, Marker, Popup} from "react-leaflet";
+import {TileLayer, MapContainer, Marker, Popup, Tooltip} from "react-leaflet";
 import L from "leaflet";
 
 import {Telex, TelexConnection} from "@flybywiresim/api-client";
@@ -10,15 +10,30 @@ import "./Map.scss";
 type MapProps = {
     darkMode: boolean,
 }
+type MapState = {
+    totalFlights: number,
+}
 
+type FlightsProps = {
+    updateTotalFlights: Function,
+}
 type FlightsState = {
     isUpdating: boolean,
     data: TelexConnection[]
 }
 
-export class Map extends React.Component<MapProps, any> {
+export class Map extends React.Component<MapProps, MapState> {
     constructor(props: MapProps) {
         super(props);
+        this.updateTotalFlights = this.updateTotalFlights.bind(this);
+    }
+
+    state: MapState = {
+        totalFlights: 0,
+    }
+
+    updateTotalFlights(flights: number) {
+        this.setState({ totalFlights: flights });
     }
 
     render() {
@@ -45,14 +60,17 @@ export class Map extends React.Component<MapProps, any> {
                                 />
                             </>
                     }
-                    <Flights />
+                    <Flights updateTotalFlights={this.updateTotalFlights} />
+                    <div className="leaflet-bottom leaflet-left" id="MapPanel">
+                        <p className="PanelText">Total Flights: {this.state.totalFlights}</p>
+                    </div>
                 </MapContainer>
             </div>
         );
     }
 }
 
-class Flights extends React.Component<any, FlightsState> {
+class Flights extends React.Component<FlightsProps, FlightsState> {
     intervalID: any;
 
     constructor(props: any) {
@@ -108,6 +126,7 @@ class Flights extends React.Component<any, FlightsState> {
             isUpdating: false,
             data: flights
         });
+        this.props.updateTotalFlights(total);
         this.intervalID = setTimeout(this.getLocationData.bind(this), 10000);
         console.log("Update finished");
     }
