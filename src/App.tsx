@@ -5,7 +5,7 @@ import './App.scss';
 function App() {
     return (
         <div className="App">
-            <Map darkMode={true} />
+            <Map tiles="carto-dark" />
         </div>
     );
 }

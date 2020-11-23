@@ -8,32 +8,67 @@ import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
 type MapProps = {
-    darkMode: boolean,
+    tiles: string,
 }
 type MapState = {
     totalFlights: number,
+    tiles: Tiles[],
+    selectedTile: string,
 }
 
 type FlightsProps = {
     updateTotalFlights: Function,
+    planeColor: string,
 }
 type FlightsState = {
     isUpdating: boolean,
-    data: TelexConnection[]
+    data: TelexConnection[],
+}
+
+type InfoWidgetProps = {
+    totalFlights: number,
+    tiles: Tiles[],
+    changeTiles: Function,
+}
+
+type Tiles = {
+    value: string,
+    name: string,
 }
 
 export class Map extends React.Component<MapProps, MapState> {
     constructor(props: MapProps) {
         super(props);
         this.updateTotalFlights = this.updateTotalFlights.bind(this);
+        this.selectTile = this.selectTile.bind(this);
     }
 
     state: MapState = {
         totalFlights: 0,
+        selectedTile: "carto-dark",
+        tiles: [
+            {value: "carto-dark", name: "Carto Dark"},
+            {value: "carto-light", name: "Carto Light"},
+            {value: "osm", name: "Open Street Map"},
+        ]
     }
 
     updateTotalFlights(flights: number) {
         this.setState({ totalFlights: flights });
+    }
+
+    selectTile(tile: string | null) {
+        if (typeof tile === null) {
+            this.setState({selectedTile: "carto-light"});
+        }
+
+        if (tile === "carto-dark") {
+            this.setState({selectedTile: "carto-dark"});
+        } else if (tile === "carto-light") {
+            this.setState({selectedTile: "carto-light"});
+        } else if (tile === "osm") {
+            this.setState({selectedTile: "osm"});
+        }
     }
 
     render() {
@@ -45,25 +80,33 @@ export class Map extends React.Component<MapProps, MapState> {
                     zoom={5}
                     scrollWheelZoom={true}>
                     {
-                        this.props.darkMode ?
+                        this.state.selectedTile === "carto-dark" ?
                             <>
                                 <TileLayer
                                     attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
                                     url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'
                                 />
+                                <Flights planeColor="#00c2cb" updateTotalFlights={this.updateTotalFlights} />
                             </>
                             :
-                            <>
-                                <TileLayer
-                                    attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
-                                    url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'
-                                />
-                            </>
+                            this.state.selectedTile === "osm" ?
+                                <>
+                                    <TileLayer
+                                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    />
+                                    <Flights planeColor="#000000" updateTotalFlights={this.updateTotalFlights} />
+                                </>
+                                :
+                                <>
+                                    <TileLayer
+                                        attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+                                        url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'
+                                    />
+                                    <Flights planeColor="#000000" updateTotalFlights={this.updateTotalFlights} />
+                                </>
                     }
-                    <Flights updateTotalFlights={this.updateTotalFlights} />
-                    <div className="leaflet-bottom leaflet-left" id="MapPanel">
-                        <p className="PanelText">Total Flights: {this.state.totalFlights}</p>
-                    </div>
+                    <InfoWidget totalFlights={this.state.totalFlights} tiles={this.state.tiles} changeTiles={this.selectTile} />
                 </MapContainer>
             </div>
         );
@@ -71,15 +114,16 @@ export class Map extends React.Component<MapProps, MapState> {
 }
 
 class Flights extends React.Component<FlightsProps, FlightsState> {
+    constructor(props: FlightsProps) {
+        super(props);
+    }
+
     intervalID: any;
 
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            isUpdating: false,
-            data: []
-        };
-    }
+    state: FlightsState = {
+        isUpdating: false,
+        data: [],
+    };
 
     componentDidMount() {
         this.getLocationData(true);
@@ -144,7 +188,7 @@ class Flights extends React.Component<FlightsProps, FlightsState> {
                                 iconAnchor: [10, 10],
                                 className: 'planeIcon',
                                 html: `<i 
-                                style="font-size: 1.75rem; color: #00c2cb ;transform-origin: center; transform: rotate(${flight.heading}deg);" 
+                                style="font-size: 1.75rem; color: ${this.props.planeColor};transform-origin: center; transform: rotate(${flight.heading}deg);" 
                                 class="material-icons">flight</i>`
                             })}>
                             <Popup>
@@ -158,6 +202,27 @@ class Flights extends React.Component<FlightsProps, FlightsState> {
                         </Marker>
                     )
                 }
+            </div>
+        );
+    }
+}
+
+class InfoWidget extends React.Component<InfoWidgetProps, any> {
+    render() {
+        return (
+            <div className="leaflet-bottom leaflet-left" id="MapPanel">
+                <p className="PanelText">Total Flights: {this.props.totalFlights}</p>
+                <p className="PanelText">
+                    {"Tile type: "}
+                    {/*@ts-ignore*/}
+                    <select onChange={(event) => this.props.changeTiles(event.target.item(event.target.selectedIndex).nodeValue)}>
+                        {
+                            this.props.tiles.map((tiles: Tiles) =>
+                                <option value={tiles.value}>{tiles.name}</option>
+                            )
+                        }
+                    </select>
+                </p>
             </div>
         );
     }
