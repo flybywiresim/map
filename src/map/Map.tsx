@@ -11,6 +11,11 @@ type MapProps = {
     darkMode: boolean,
 }
 
+type FlightsState = {
+    isUpdating: boolean,
+    data: TelexConnection[]
+}
+
 export class Map extends React.Component<MapProps, any> {
     constructor(props: MapProps) {
         super(props);
@@ -47,7 +52,7 @@ export class Map extends React.Component<MapProps, any> {
     }
 }
 
-class Flights extends React.Component<any, {isUpdating: boolean, data: TelexConnection[]}> {
+class Flights extends React.Component<any, FlightsState> {
     intervalID: any;
 
     constructor(props: any) {
