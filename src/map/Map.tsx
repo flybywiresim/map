@@ -1,18 +1,14 @@
 import React from "react";
-import {TileLayer, MapContainer, Marker, Popup, Tooltip} from "react-leaflet";
-import L from "leaflet";
+import {TileLayer, MapContainer, Marker, Popup} from "react-leaflet";
+import L, {Browser} from "leaflet";
 
 import {Telex, TelexConnection} from "@flybywiresim/api-client";
 
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
-type MapProps = {
-    tiles: string,
-}
 type MapState = {
     totalFlights: number,
-    tiles: Tiles[],
     selectedTile: string,
 }
 
@@ -36,8 +32,8 @@ type Tiles = {
     name: string,
 }
 
-export class Map extends React.Component<MapProps, MapState> {
-    constructor(props: MapProps) {
+export class Map extends React.Component<any, MapState> {
+    constructor(props: any) {
         super(props);
         this.updateTotalFlights = this.updateTotalFlights.bind(this);
         this.selectTile = this.selectTile.bind(this);
@@ -45,30 +41,50 @@ export class Map extends React.Component<MapProps, MapState> {
 
     state: MapState = {
         totalFlights: 0,
-        selectedTile: "carto-dark",
-        tiles: [
-            {value: "carto-dark", name: "Carto Dark"},
-            {value: "carto-light", name: "Carto Light"},
-            {value: "osm", name: "Open Street Map"},
-        ]
+        selectedTile: this.findPreferredTile(),
+    }
+
+    tiles: Tiles[] = [
+        {value: "carto-dark", name: "Carto Dark"},
+        {value: "carto-light", name: "Carto Light"},
+        {value: "osm", name: "Open Street Map"},
+    ]
+
+    findPreferredTile() {
+        try {
+            const tiles = window.localStorage.getItem("PreferredTileset");
+            if (tiles === null) {
+                return "carto-dark";
+            } else {
+                return tiles;
+            }
+        } catch {
+            return "carto-dark";
+        }
     }
 
     updateTotalFlights(flights: number) {
         this.setState({ totalFlights: flights });
+        this.forceUpdate();
     }
 
     selectTile(tile: string | null) {
         if (typeof tile === null) {
             this.setState({selectedTile: "carto-light"});
+        } else {
+            if (tile === "carto-dark") {
+                this.setState({selectedTile: "carto-dark"});
+                window.localStorage.setItem("PreferredTileset", "carto-dark");
+            } else if (tile === "carto-light") {
+                this.setState({selectedTile: "carto-light"});
+                window.localStorage.setItem("PreferredTileset", "carto-light");
+            } else if (tile === "osm") {
+                this.setState({selectedTile: "osm"});
+                window.localStorage.setItem("PreferredTileset", "osm");
+            }
         }
 
-        if (tile === "carto-dark") {
-            this.setState({selectedTile: "carto-dark"});
-        } else if (tile === "carto-light") {
-            this.setState({selectedTile: "carto-light"});
-        } else if (tile === "osm") {
-            this.setState({selectedTile: "osm"});
-        }
+        location.reload();
     }
 
     render() {
@@ -106,7 +122,7 @@ export class Map extends React.Component<MapProps, MapState> {
                                     <Flights planeColor="#000000" updateTotalFlights={this.updateTotalFlights} />
                                 </>
                     }
-                    <InfoWidget totalFlights={this.state.totalFlights} tiles={this.state.tiles} changeTiles={this.selectTile} />
+                    <InfoWidget totalFlights={this.state.totalFlights} tiles={this.tiles} changeTiles={this.selectTile} />
                 </MapContainer>
             </div>
         );
@@ -208,14 +224,26 @@ class Flights extends React.Component<FlightsProps, FlightsState> {
 }
 
 class InfoWidget extends React.Component<InfoWidgetProps, any> {
+    retrieveTileIndex() {
+        const tile = localStorage.getItem("PreferredTileset");
+        if (tile === null) {
+            return "carto-light";
+        } else if (tile === "carto-dark") {
+            return "carto-dark";
+        } else if (tile === "carto-light") {
+            return "carto-light";
+        } else if (tile === "osm") {
+            return "osm";
+        }
+    }
+
     render() {
         return (
             <div className="leaflet-bottom leaflet-left" id="MapPanel">
                 <p className="PanelText">Total Flights: {this.props.totalFlights}</p>
                 <p className="PanelText">
                     {"Tile type: "}
-                    {/*@ts-ignore*/}
-                    <select onChange={(event) => this.props.changeTiles(event.target.item(event.target.selectedIndex).nodeValue)}>
+                    <select defaultValue={this.retrieveTileIndex()} onChange={(event) => this.props.changeTiles(event.target.value)}>
                         {
                             this.props.tiles.map((tiles: Tiles) =>
                                 <option value={tiles.value}>{tiles.name}</option>
