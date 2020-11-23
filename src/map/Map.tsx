@@ -9,13 +9,14 @@ import "./Map.scss";
 
 type MapState = {
     totalFlights: number,
-    selectedTile: string,
+    selectedTile: TileSet,
 }
 
 type FlightsProps = {
     updateTotalFlights: Function,
     planeColor: string,
 }
+
 type FlightsState = {
     isUpdating: boolean,
     data: TelexConnection[],
@@ -23,66 +24,81 @@ type FlightsState = {
 
 type InfoWidgetProps = {
     totalFlights: number,
-    tiles: Tiles[],
+    tiles: TileSet[],
     changeTiles: Function,
 }
 
-type Tiles = {
+type TileSet = {
     value: string,
     name: string,
+    attribution: string,
+    url: string,
+    planeColor: string,
 }
 
 export class Map extends React.Component<any, MapState> {
-    constructor(props: any) {
-        super(props);
-        this.updateTotalFlights = this.updateTotalFlights.bind(this);
-        this.selectTile = this.selectTile.bind(this);
-    }
+    availableTileSets: TileSet[] = [
+        {
+            value: "carto-dark",
+            name: "Carto Dark",
+            attribution: "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>",
+            url: "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png",
+            planeColor: "#00c2cb",
+        },
+        {
+            value: "carto-light",
+            name: "Carto Light",
+            attribution: "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>",
+            url: "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+            planeColor: "#000000",
+        },
+        {
+            value: "osm",
+            name: "Open Street Map",
+            attribution: "&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors",
+            url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            planeColor: "#000000",
+        },
+    ]
 
     state: MapState = {
         totalFlights: 0,
         selectedTile: this.findPreferredTile(),
     }
 
-    tiles: Tiles[] = [
-        {value: "carto-dark", name: "Carto Dark"},
-        {value: "carto-light", name: "Carto Light"},
-        {value: "osm", name: "Open Street Map"},
-    ]
+    constructor(props: any) {
+        super(props);
+        this.updateTotalFlights = this.updateTotalFlights.bind(this);
+        this.selectTile = this.selectTile.bind(this);
+    }
 
-    findPreferredTile() {
+    findPreferredTile(): TileSet {
         try {
-            const tiles = window.localStorage.getItem("PreferredTileset");
-            if (tiles === null) {
-                return "carto-dark";
-            } else {
-                return tiles;
+            const storedTiles = window.localStorage.getItem("PreferredTileset");
+            if (!storedTiles) {
+                return this.availableTileSets[0];
             }
+
+            return this.availableTileSets.find(x => x.value === storedTiles) || this.availableTileSets[0];
         } catch {
-            return "carto-dark";
+            return this.availableTileSets[0];
         }
     }
 
     updateTotalFlights(flights: number) {
-        this.setState({ totalFlights: flights });
+        this.setState({totalFlights: flights});
         this.forceUpdate();
     }
 
     selectTile(tile: string | null) {
-        if (typeof tile === null) {
-            this.setState({selectedTile: "carto-light"});
-        } else {
-            if (tile === "carto-dark") {
-                this.setState({selectedTile: "carto-dark"});
-                window.localStorage.setItem("PreferredTileset", "carto-dark");
-            } else if (tile === "carto-light") {
-                this.setState({selectedTile: "carto-light"});
-                window.localStorage.setItem("PreferredTileset", "carto-light");
-            } else if (tile === "osm") {
-                this.setState({selectedTile: "osm"});
-                window.localStorage.setItem("PreferredTileset", "osm");
-            }
+        if (!tile) {
+            return this.availableTileSets[0];
         }
+
+        const newTiles = this.availableTileSets.find(x => x.value === tile) || this.availableTileSets[0];
+
+        this.setState({selectedTile: newTiles});
+        window.localStorage.setItem("PreferredTileset", newTiles.value);
 
         location.reload();
     }
@@ -95,34 +111,9 @@ export class Map extends React.Component<any, MapState> {
                     center={[51.505, -0.09]}
                     zoom={5}
                     scrollWheelZoom={true}>
-                    {
-                        this.state.selectedTile === "carto-dark" ?
-                            <>
-                                <TileLayer
-                                    attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
-                                    url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'
-                                />
-                                <Flights planeColor="#00c2cb" updateTotalFlights={this.updateTotalFlights} />
-                            </>
-                            :
-                            this.state.selectedTile === "osm" ?
-                                <>
-                                    <TileLayer
-                                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                    />
-                                    <Flights planeColor="#000000" updateTotalFlights={this.updateTotalFlights} />
-                                </>
-                                :
-                                <>
-                                    <TileLayer
-                                        attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
-                                        url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'
-                                    />
-                                    <Flights planeColor="#000000" updateTotalFlights={this.updateTotalFlights} />
-                                </>
-                    }
-                    <InfoWidget totalFlights={this.state.totalFlights} tiles={this.tiles} changeTiles={this.selectTile} />
+                    <TileLayer attribution={this.state.selectedTile.attribution} url={this.state.selectedTile.url} />
+                    <Flights planeColor={this.state.selectedTile.planeColor} updateTotalFlights={this.updateTotalFlights}/>
+                    <InfoWidget totalFlights={this.state.totalFlights} tiles={this.availableTileSets} changeTiles={this.selectTile}/>
                 </MapContainer>
             </div>
         );
@@ -199,7 +190,7 @@ class Flights extends React.Component<FlightsProps, FlightsState> {
                         <Marker
                             key={flight.id}
                             position={[flight.location.y, flight.location.x]}
-                            icon={ L.divIcon({
+                            icon={L.divIcon({
                                 iconSize: [20, 20],
                                 iconAnchor: [10, 10],
                                 className: 'planeIcon',
@@ -224,16 +215,16 @@ class Flights extends React.Component<FlightsProps, FlightsState> {
 }
 
 class InfoWidget extends React.Component<InfoWidgetProps, any> {
-    retrieveTileIndex() {
-        const tile = localStorage.getItem("PreferredTileset");
-        if (tile === null) {
-            return "carto-light";
-        } else if (tile === "carto-dark") {
-            return "carto-dark";
-        } else if (tile === "carto-light") {
-            return "carto-light";
-        } else if (tile === "osm") {
-            return "osm";
+    retrieveActiveTileSet() {
+        try {
+            const storedTiles = window.localStorage.getItem("PreferredTileset");
+            if (!storedTiles) {
+                return this.props.tiles[0];
+            }
+
+            return this.props.tiles.find(x => x.value === storedTiles) || this.props.tiles[0];
+        } catch {
+            return this.props.tiles[0];
         }
     }
 
@@ -243,9 +234,9 @@ class InfoWidget extends React.Component<InfoWidgetProps, any> {
                 <p className="PanelText">Total Flights: {this.props.totalFlights}</p>
                 <p className="PanelText">
                     {"Tile type: "}
-                    <select defaultValue={this.retrieveTileIndex()} onChange={(event) => this.props.changeTiles(event.target.value)}>
+                    <select defaultValue={this.retrieveActiveTileSet().value} onChange={(event) => this.props.changeTiles(event.target.value)}>
                         {
-                            this.props.tiles.map((tiles: Tiles) =>
+                            this.props.tiles.map((tiles: TileSet) =>
                                 <option value={tiles.value}>{tiles.name}</option>
                             )
                         }
