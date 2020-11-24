@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "files": [
-    "dist/*"
+    "dist/"
   ],
   "dependencies": {
     "@flybywiresim/api-client": "^0.1.3",
