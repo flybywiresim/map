@@ -36,7 +36,7 @@ type TileSet = {
     planeColor: string,
 }
 
-export class Map extends React.Component<any, MapState> {
+export default class Map extends React.Component<any, MapState> {
     availableTileSets: TileSet[] = [
         {
             value: "carto-dark",
