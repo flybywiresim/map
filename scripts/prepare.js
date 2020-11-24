@@ -5,4 +5,6 @@ try {
     fs.unlinkSync('dist');
 } catch {}
 
-exec.spawnSync("babel", ["--extensions", ".tsx", "src/map/*", "--out-dir dist", "--copy-files"]);
+exec.execFile("babel", ["--extensions", ".tsx", "../src/map/*", "--out-dir", "../dist", "--copy-files"], (error, stdout, stderr) => {
+    console.log(stdout + "\n\n\n" + stderr);
+});

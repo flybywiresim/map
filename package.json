@@ -32,7 +32,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prepare": "node scripts/prepare.js"
+    "prepare": "babel --extensions .tsx src/map/* --out-dir dist --copy-files"
   },
   "eslintConfig": {
     "extends": [
