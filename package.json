@@ -2,9 +2,6 @@
   "name": "fbw-map",
   "version": "0.1.0",
   "private": true,
-  "files": [
-    "dist/"
-  ],
   "dependencies": {
     "@flybywiresim/api-client": "^0.1.3",
     "@babel/cli": "^7.12.8",
