@@ -221,7 +221,6 @@ class Flights extends React.Component<FlightsProps, FlightsState> {
         });
 
         this.setState({selectedAirports: airports});
-        this.forceUpdate();
     }
 
     clearAirports() {

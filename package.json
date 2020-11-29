@@ -1,6 +1,6 @@
 {
   "name": "@flybywiresim/map",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "private": false,
   "files": [
     "dist"
