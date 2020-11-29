@@ -1,6 +1,6 @@
 {
   "name": "@flybywiresim/map",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "private": false,
   "repository": {
     "type": "git",
@@ -9,7 +9,6 @@
   "bugs": {
     "url": "https://github.com/flybywiresim/map/issues"
   },
-  "homepage": "https://github.com/flybywiresim/map#readme",
   "files": [
     "dist"
   ],
