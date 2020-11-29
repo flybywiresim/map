@@ -3,21 +3,25 @@
 #mapid {
   height: 100vh;
   width: 100vw;
-}
 
-#MapPanel {
-  font-family: "Nunito Sabs", sans-serif;
-  font-size: 1rem;
-  color: white;
-  margin: 0 0 2.5rem 2.5rem;
-  padding: 1rem;
-  // height: 10rem;
-  // width: 30rem;
-  background: rgb(40, 40, 40);
-  pointer-events: all !important;
+  .map-icon-shadow {
+    text-shadow: 0 0 4px #000000;
+  }
 
-  .PanelText {
-    margin: 0;
-    padding: 0 !important;
+  #MapPanel {
+    font-family: "Nunito Sabs", sans-serif;
+    font-size: 1rem;
+    color: white;
+    margin: 0 0 2.5rem 2.5rem;
+    padding: 1rem;
+    // height: 10rem;
+    // width: 30rem;
+    background: rgb(40, 40, 40);
+    pointer-events: all !important;
+
+    .PanelText {
+      margin: 0;
+      padding: 0 !important;
+    }
   }
 }
