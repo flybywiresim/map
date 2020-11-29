@@ -1,8 +1,8 @@
 import React from "react";
-import {TileLayer, MapContainer, Marker, Popup} from "react-leaflet";
-import L, {Browser} from "leaflet";
+import {TileLayer, MapContainer, Marker, Popup, Tooltip} from "react-leaflet";
+import L from "leaflet";
 
-import {Telex, TelexConnection} from "@flybywiresim/api-client";
+import {Telex, TelexConnection, Airport, AirportResponse} from "@flybywiresim/api-client";
 
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
@@ -15,11 +15,18 @@ type MapState = {
 type FlightsProps = {
     updateTotalFlights: Function,
     planeColor: string,
+    airportColor: string,
 }
 
 type FlightsState = {
     isUpdating: boolean,
     data: TelexConnection[],
+    selectedAirports: SelectedAirportType[],
+}
+
+type SelectedAirportType = {
+    airport: AirportResponse,
+    tag: string
 }
 
 type InfoWidgetProps = {
@@ -34,7 +41,20 @@ type TileSet = {
     attribution: string,
     url: string,
     planeColor: string,
+    airportColor: string,
 }
+
+const emptyAirportResponse: AirportResponse = {
+    continent: "",
+    country: "",
+    elevation: 0,
+    icao: "",
+    lat: 0,
+    lon: 0,
+    name: "",
+    type: ""
+
+};
 
 export default class Map extends React.Component<any, MapState> {
     availableTileSets: TileSet[] = [
@@ -44,6 +64,7 @@ export default class Map extends React.Component<any, MapState> {
             attribution: "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>",
             url: "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png",
             planeColor: "#00c2cb",
+            airportColor: "#ffffff"
         },
         {
             value: "carto-light",
@@ -51,6 +72,7 @@ export default class Map extends React.Component<any, MapState> {
             attribution: "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>",
             url: "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
             planeColor: "#000000",
+            airportColor: "#000000"
         },
         {
             value: "osm",
@@ -58,6 +80,7 @@ export default class Map extends React.Component<any, MapState> {
             attribution: "&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors",
             url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
             planeColor: "#000000",
+            airportColor: "#000000"
         },
     ]
 
@@ -112,7 +135,7 @@ export default class Map extends React.Component<any, MapState> {
                     zoom={5}
                     scrollWheelZoom={true}>
                     <TileLayer attribution={this.state.selectedTile.attribution} url={this.state.selectedTile.url} />
-                    <Flights planeColor={this.state.selectedTile.planeColor} updateTotalFlights={this.updateTotalFlights}/>
+                    <Flights planeColor={this.state.selectedTile.planeColor} airportColor={this.state.selectedTile.airportColor} updateTotalFlights={this.updateTotalFlights}/>
                     <InfoWidget totalFlights={this.state.totalFlights} tiles={this.availableTileSets} changeTiles={this.selectTile}/>
                 </MapContainer>
             </div>
@@ -130,6 +153,7 @@ class Flights extends React.Component<FlightsProps, FlightsState> {
     state: FlightsState = {
         isUpdating: false,
         data: [],
+        selectedAirports: [],
     };
 
     componentDidMount() {
@@ -182,6 +206,28 @@ class Flights extends React.Component<FlightsProps, FlightsState> {
         console.log("Update finished");
     }
 
+    async getAirports(inputtedAirports: string[]) {
+        const airports: SelectedAirportType[] = [];
+
+        inputtedAirports.map(async (airport: string, index, orig) => {
+            if ((airport !== "") && (orig.length === 2)) {
+                const airportTemp = await Airport.get(airport);
+                if (index === 0) {
+                    airports.push({airport: airportTemp, tag: 'origin'});
+                } else {
+                    airports.push({airport: airportTemp, tag: 'destination'});
+                }
+            }
+        });
+
+        this.setState({selectedAirports: airports});
+        this.forceUpdate();
+    }
+
+    clearAirports() {
+        this.setState({selectedAirports: []});
+    }
+
     render() {
         return (
             <div>
@@ -192,20 +238,38 @@ class Flights extends React.Component<FlightsProps, FlightsState> {
                             position={[flight.location.y, flight.location.x]}
                             icon={L.divIcon({
                                 iconSize: [20, 20],
-                                iconAnchor: [10, 10],
+                                iconAnchor: [14, 10],
                                 className: 'planeIcon',
                                 html: `<i 
                                 style="font-size: 1.75rem; color: ${this.props.planeColor};transform-origin: center; transform: rotate(${flight.heading}deg);" 
                                 class="material-icons">flight</i>`
                             })}>
-                            <Popup>
+                            <Popup onOpen={() => this.getAirports([flight.origin, flight.destination])} onClose={() => this.clearAirports()}>
                                 {
                                     !((flight.origin === "") || (flight.destination === "")) ?
-                                        "Flight " + flight.flight + " flying from " + flight.origin + " to " + flight.destination
+                                        `Flight ${flight.flight} flying from ${flight.origin} to ${flight.destination} at ${flight.trueAltitude}ft`
                                         :
-                                        !(flight.flight === "") ? "Flight " + flight.flight : flight.aircraftType
+                                        !(flight.flight === "") ? `Flight ${flight.flight}` : flight.aircraftType
                                 }
                             </Popup>
+                        </Marker>
+                    )
+                }
+                {
+                    this.state.selectedAirports.map(airport =>
+                        <Marker
+                            position={[airport.airport.lat, airport.airport.lon]}
+                            icon={L.divIcon({
+                                iconSize: [20, 20],
+                                iconAnchor: [14, 10],
+                                className: "airportIcon",
+                                html: `<i 
+                                    style="font-size: 1.75rem; color: ${this.props.airportColor};" 
+                                    class="material-icons">${(airport.tag === "destination") ? 'flight_land' : 'flight_takeoff'}</i>`
+                            })}>
+                            <Tooltip direction="top" permanent>
+                                <p>{airport.airport.icao}</p>
+                            </Tooltip>
                         </Marker>
                     )
                 }
