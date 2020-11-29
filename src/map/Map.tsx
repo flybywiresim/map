@@ -194,19 +194,27 @@ class Flights extends React.Component<FlightsProps, FlightsState> {
         console.log("Update finished");
     }
 
-    async getAirports(inputtedAirports: string[]) {
+    async getAirports(origin: string, destination: string) {
         const airports: SelectedAirportType[] = [];
 
-        inputtedAirports.map(async (airport: string, index, orig) => {
-            if ((airport !== "") && (orig.length === 2)) {
-                const airportTemp = await Airport.get(airport);
-                if (index === 0) {
-                    airports.push({airport: airportTemp, tag: 'origin'});
-                } else {
-                    airports.push({airport: airportTemp, tag: 'destination'});
-                }
+        // Two individual try/catch: If one fails the other should still show
+        if (origin) {
+            try {
+                const originArpt = await Airport.get(origin);
+                airports.push({airport: originArpt, tag: 'origin'});
+            } catch (e) {
+                console.error(e);
             }
-        });
+        }
+
+        if (destination) {
+            try {
+                const destinationArpt = await Airport.get(destination);
+                airports.push({airport: destinationArpt, tag: 'destination'});
+            } catch (e) {
+                console.error(e);
+            }
+        }
 
         this.setState({selectedAirports: airports});
     }
@@ -231,7 +239,7 @@ class Flights extends React.Component<FlightsProps, FlightsState> {
                                 style="font-size: 1.75rem; color: ${this.props.planeColor};transform-origin: center; transform: rotate(${flight.heading}deg);" 
                                 class="material-icons">flight</i>`
                             })}>
-                            <Popup onOpen={() => this.getAirports([flight.origin, flight.destination])} onClose={() => this.clearAirports()}>
+                            <Popup onOpen={() => this.getAirports(flight.origin, flight.destination)} onClose={() => this.clearAirports()}>
                                 {
                                     !((flight.origin === "") || (flight.destination === "")) ?
                                         `Flight ${flight.flight} flying from ${flight.origin} to ${flight.destination} at ${flight.trueAltitude}ft`
