@@ -1,3 +1,8 @@
-# FBW-Map
+![FlyByWireLogo](https://raw.githubusercontent.com/flybywiresim/fbw-branding/master/svg/FBW-Logo.svg)
+# FlyByWire Simulations Live Map
 
-This is a testing repo for the FlyByWire Map
+## Installation
+
+Install the live map using npm:
+
+    $ npm install --save @flybywiresim/map
