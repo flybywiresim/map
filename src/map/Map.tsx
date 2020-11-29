@@ -263,7 +263,7 @@ class Flights extends React.Component<FlightsProps, FlightsState> {
                                     class="material-icons">${(airport.tag === "destination") ? 'flight_land' : 'flight_takeoff'}</i>`
                             })}>
                             <Tooltip direction="top" permanent>
-                                <p>{airport.airport.icao}</p>
+                                <p>{airport.airport.icao} - {airport.airport.name}</p>
                             </Tooltip>
                         </Marker>
                     )
