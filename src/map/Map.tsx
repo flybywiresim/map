@@ -59,17 +59,25 @@ export default class Map extends React.Component<any, MapState> {
             name: "Carto Light",
             attribution: "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>",
             url: "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
-            planeColor: "#000000",
-            airportColor: "#000000"
+            planeColor: "#545454",
+            airportColor: "#00c2cb"
         },
         {
             value: "osm",
             name: "Open Street Map",
             attribution: "&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors",
             url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            planeColor: "#000000",
-            airportColor: "#000000"
+            planeColor: "#545454",
+            airportColor: "#00c2cb"
         },
+        {
+            value: "arcgis",
+            name: "Satellite",
+            attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
+            url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            planeColor: "#00c2cb",
+            airportColor: "#ffffff"
+        }
     ]
 
     state: MapState = {
