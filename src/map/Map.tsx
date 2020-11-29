@@ -44,18 +44,6 @@ type TileSet = {
     airportColor: string,
 }
 
-const emptyAirportResponse: AirportResponse = {
-    continent: "",
-    country: "",
-    elevation: 0,
-    icao: "",
-    lat: 0,
-    lon: 0,
-    name: "",
-    type: ""
-
-};
-
 export default class Map extends React.Component<any, MapState> {
     availableTileSets: TileSet[] = [
         {
