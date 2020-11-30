@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from "react";
+import React, {ChangeEvent, useState} from "react";
 import {TileLayer, MapContainer, Marker, Popup, Tooltip} from "react-leaflet";
 import L from "leaflet";
 
@@ -7,13 +7,6 @@ import {Telex, TelexConnection, Airport, AirportResponse} from "@flybywiresim/ap
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
-type MapState = {
-    totalFlights: number,
-    selectedTile: TileSet,
-    currentFlight: string,
-    searchedFlight: string,
-    flightData: TelexConnection[],
-}
 type MapProps = {
     currentFlight?: string,
 }
@@ -65,8 +58,8 @@ type TileSet = {
     iconsUseShadow: boolean,
 }
 
-export default class Map extends React.Component<MapProps, MapState> {
-    availableTileSets: TileSet[] = [
+const Map = (props: MapProps) => {
+    const availableTileSets: TileSet[] = [
         {
             value: "carto-dark",
             name: "Dark",
@@ -97,92 +90,76 @@ export default class Map extends React.Component<MapProps, MapState> {
             airportColor: "#545454",
             iconsUseShadow: true,
         }
-    ]
+    ];
 
-    state: MapState = {
-        currentFlight: "",
-        totalFlights: 0,
-        selectedTile: this.findPreferredTile(),
-        flightData: [],
-        searchedFlight: "",
-    }
+    const [currentFlight, setCurrentFlight] = useState<string>("");
+    const [totalFlights, setTotalFlights] = useState<number>(0);
+    const [selectedTile, setSelectedTile] = useState<TileSet>(findPreferredTile());
+    const [flightData, setFlightData] = useState<TelexConnection[]>([]);
+    const [searchedFlight, setSearchedFlight] = useState<string>("");
 
-    constructor(props: any) {
-        super(props);
-
-        this.state.currentFlight = props.currentFlight;
-
-        this.updateTotalFlights = this.updateTotalFlights.bind(this);
-        this.updateFlightData = this.updateFlightData.bind(this);
-        this.updateSearchedFlight = this.updateSearchedFlight.bind(this);
-        this.selectTile = this.selectTile.bind(this);
-    }
-
-    findPreferredTile(): TileSet {
+    function findPreferredTile(): TileSet {
         try {
             const storedTiles = window.localStorage.getItem("PreferredTileset");
             if (!storedTiles) {
-                return this.availableTileSets[0];
+                return availableTileSets[0];
             }
 
-            return this.availableTileSets.find(x => x.value === storedTiles) || this.availableTileSets[0];
+            return availableTileSets.find(x => x.value === storedTiles) || availableTileSets[0];
         } catch {
-            return this.availableTileSets[0];
+            return availableTileSets[0];
         }
     }
 
-    updateTotalFlights(flights: number) {
-        this.setState({totalFlights: flights});
-        this.forceUpdate();
+    function updateTotalFlights(flights: number) {
+        setTotalFlights(flights);
     }
 
-    updateFlightData(data: TelexConnection[]) {
-        this.setState({flightData: data});
+    function updateFlightData(data: TelexConnection[]) {
+        setFlightData(data);
     }
 
-    updateSearchedFlight(flightName: string) {
-        this.setState({searchedFlight: flightName});
+    function updateSearchedFlight(flightName: string) {
+        setSearchedFlight(flightName);
     }
 
-    selectTile(tile: string | null) {
+    function selectTile(tile: string | null) {
         if (!tile) {
-            return this.availableTileSets[0];
+            return availableTileSets[0];
         }
 
-        const newTiles = this.availableTileSets.find(x => x.value === tile) || this.availableTileSets[0];
+        const newTiles = availableTileSets.find(x => x.value === tile) || availableTileSets[0];
 
-        this.setState({selectedTile: newTiles});
+        setSelectedTile(newTiles);
         window.localStorage.setItem("PreferredTileset", newTiles.value);
 
         location.reload();
     }
 
-    render() {
-        return (
-            <div>
-                <MapContainer
-                    id="mapid"
-                    center={[51.505, -0.09]}
-                    zoom={5}
-                    scrollWheelZoom={true}>
-                    <TileLayer attribution={this.state.selectedTile.attribution} url={this.state.selectedTile.url} />
-                    <SearchBar flightData={this.state.flightData} updateSearchedFlight={this.updateSearchedFlight}/>
-                    <FlightsLayer
-                        planeColor={this.state.selectedTile.planeColor}
-                        planeHighlightColor={this.state.selectedTile.planeHighlightColor}
-                        airportColor={this.state.selectedTile.airportColor}
-                        updateTotalFlights={this.updateTotalFlights}
-                        updateFlightData={this.updateFlightData}
-                        iconsUseShadow={this.state.selectedTile.iconsUseShadow}
-                        currentFlight={this.state.currentFlight}
-                        searchedFlight={this.state.searchedFlight}
-                    />
-                    <InfoPanel totalFlights={this.state.totalFlights} tiles={this.availableTileSets} changeTiles={this.selectTile}/>
-                </MapContainer>
-            </div>
-        );
-    }
-}
+    return (
+        <div>
+            <MapContainer
+                id="mapid"
+                center={[51.505, -0.09]}
+                zoom={5}
+                scrollWheelZoom={true}>
+                <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} />
+                <SearchBar flightData={flightData} updateSearchedFlight={updateSearchedFlight}/>
+                <FlightsLayer
+                    planeColor={selectedTile.planeColor}
+                    planeHighlightColor={selectedTile.planeHighlightColor}
+                    airportColor={selectedTile.airportColor}
+                    updateTotalFlights={updateTotalFlights}
+                    updateFlightData={updateFlightData}
+                    iconsUseShadow={selectedTile.iconsUseShadow}
+                    currentFlight={currentFlight}
+                    searchedFlight={searchedFlight}
+                />
+                <InfoPanel totalFlights={totalFlights} tiles={availableTileSets} changeTiles={selectTile}/>
+            </MapContainer>
+        </div>
+    );
+};
 
 class FlightsLayer extends React.Component<FlightsProps, FlightsState> {
     constructor(props: FlightsProps) {
@@ -421,3 +398,5 @@ class InfoPanel extends React.Component<InfoPanelProps, any> {
         );
     }
 }
+
+export default Map;
