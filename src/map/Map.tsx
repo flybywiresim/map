@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ChangeEvent} from "react";
 import {TileLayer, MapContainer, Marker, Popup, Tooltip} from "react-leaflet";
 import L from "leaflet";
 
@@ -11,21 +11,21 @@ type MapState = {
     totalFlights: number,
     selectedTile: TileSet,
     currentFlight: string,
+    flightData: TelexConnection[],
 }
-
 type MapProps = {
     currentFlight?: string,
 }
 
 type FlightsProps = {
     updateTotalFlights: Function,
+    updateFlightData: Function,
     planeColor: string,
     planeHighlightColor: string,
     airportColor: string,
     iconsUseShadow: boolean,
     currentFlight: string,
 }
-
 type FlightsState = {
     isUpdating: boolean,
     data: TelexConnection[],
@@ -37,7 +37,15 @@ type SelectedAirportType = {
     tag: string
 }
 
-type InfoWidgetProps = {
+type SearchBarProps = {
+    flightData: TelexConnection[],
+}
+type SearchBarState = {
+    nameList: string[],
+    searchValue: string,
+}
+
+type InfoPanelProps = {
     totalFlights: number,
     tiles: TileSet[],
     changeTiles: Function,
@@ -92,6 +100,7 @@ export default class Map extends React.Component<MapProps, MapState> {
         currentFlight: "",
         totalFlights: 0,
         selectedTile: this.findPreferredTile(),
+        flightData: [],
     }
 
     constructor(props: any) {
@@ -100,6 +109,7 @@ export default class Map extends React.Component<MapProps, MapState> {
         this.state.currentFlight = props.currentFlight;
 
         this.updateTotalFlights = this.updateTotalFlights.bind(this);
+        this.updateFlightData = this.updateFlightData.bind(this);
         this.selectTile = this.selectTile.bind(this);
     }
 
@@ -119,6 +129,10 @@ export default class Map extends React.Component<MapProps, MapState> {
     updateTotalFlights(flights: number) {
         this.setState({totalFlights: flights});
         this.forceUpdate();
+    }
+
+    updateFlightData(data: TelexConnection[]) {
+        this.setState({flightData: data});
     }
 
     selectTile(tile: string | null) {
@@ -143,15 +157,17 @@ export default class Map extends React.Component<MapProps, MapState> {
                     zoom={5}
                     scrollWheelZoom={true}>
                     <TileLayer attribution={this.state.selectedTile.attribution} url={this.state.selectedTile.url} />
+                    <SearchBar flightData={this.state.flightData}/>
                     <FlightsLayer
                         planeColor={this.state.selectedTile.planeColor}
                         planeHighlightColor={this.state.selectedTile.planeHighlightColor}
                         airportColor={this.state.selectedTile.airportColor}
                         updateTotalFlights={this.updateTotalFlights}
+                        updateFlightData={this.updateFlightData}
                         iconsUseShadow={this.state.selectedTile.iconsUseShadow}
                         currentFlight={this.state.currentFlight}
                     />
-                    <InfoWidget totalFlights={this.state.totalFlights} tiles={this.availableTileSets} changeTiles={this.selectTile}/>
+                    <InfoPanel totalFlights={this.state.totalFlights} tiles={this.availableTileSets} changeTiles={this.selectTile}/>
                 </MapContainer>
             </div>
         );
@@ -216,6 +232,7 @@ class FlightsLayer extends React.Component<FlightsProps, FlightsState> {
             isUpdating: false,
             data: flights
         });
+        this.props.updateFlightData(flights);
         this.props.updateTotalFlights(total);
         this.intervalID = setTimeout(this.getLocationData.bind(this), 10000);
         console.log("Update finished");
@@ -302,7 +319,73 @@ class FlightsLayer extends React.Component<FlightsProps, FlightsState> {
     }
 }
 
-class InfoWidget extends React.Component<InfoWidgetProps, any> {
+class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
+    state: SearchBarState = {
+        nameList: this.generateNameList(),
+        searchValue: "",
+    }
+
+    componentDidUpdate(prevProps: Readonly<SearchBarProps>) {
+        if (prevProps.flightData !== this.props.flightData) {
+            const names = this.generateNameList();
+            this.setState({nameList: names});
+        }
+    }
+
+    generateNameList() {
+        const data = this.props.flightData;
+        const nameList: string[] = [];
+        data.map(flight => {
+            nameList.push(flight.flight);
+        });
+
+        return nameList;
+    }
+
+    handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+        this.setState({searchValue: event.target.value.toString()});
+    }
+
+    handleSearch() {
+        const search = this.state.searchValue;
+
+        this.props.flightData.map((flight, index) => {
+            if (flight.flight === search) {
+                console.log(`${flight.flight} is at index ${index}`);
+            }
+        });
+    }
+
+    handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            this.handleSearch();
+        }
+    }
+
+    render() {
+        return (
+            <div className="leaflet-top leaflet-left Panel SearchPanel">
+                <p className="PanelText">Search: </p>
+                <input
+                    type="text"
+                    list="nameList"
+                    placeholder="Flight Number"
+                    onChange={this.handleSearchChange}
+                    onKeyPress={this.handleEnterPress}/>
+                <button onClick={this.handleSearch.bind(this)}>Search</button>
+                <datalist id="nameList">
+                    {
+                        this.state.nameList.map(name =>
+                            <option value={name} />
+                        )
+                    }
+                </datalist>
+            </div>
+        );
+    }
+}
+
+class InfoPanel extends React.Component<InfoPanelProps, any> {
     retrieveActiveTileSet() {
         try {
             const storedTiles = window.localStorage.getItem("PreferredTileset");
@@ -318,7 +401,7 @@ class InfoWidget extends React.Component<InfoWidgetProps, any> {
 
     render() {
         return (
-            <div className="leaflet-bottom leaflet-left" id="MapPanel">
+            <div className="leaflet-bottom leaflet-left Panel InfoPanel">
                 <p className="PanelText">Total Flights: {this.props.totalFlights}</p>
                 <p className="PanelText">
                     {"Map Style: "}
