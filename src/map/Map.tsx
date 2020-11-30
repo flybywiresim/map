@@ -11,6 +11,7 @@ type MapState = {
     totalFlights: number,
     selectedTile: TileSet,
     currentFlight: string,
+    searchedFlight: string,
     flightData: TelexConnection[],
 }
 type MapProps = {
@@ -25,6 +26,7 @@ type FlightsProps = {
     airportColor: string,
     iconsUseShadow: boolean,
     currentFlight: string,
+    searchedFlight: string,
 }
 type FlightsState = {
     isUpdating: boolean,
@@ -39,6 +41,7 @@ type SelectedAirportType = {
 
 type SearchBarProps = {
     flightData: TelexConnection[],
+    updateSearchedFlight: Function,
 }
 type SearchBarState = {
     nameList: string[],
@@ -101,6 +104,7 @@ export default class Map extends React.Component<MapProps, MapState> {
         totalFlights: 0,
         selectedTile: this.findPreferredTile(),
         flightData: [],
+        searchedFlight: "",
     }
 
     constructor(props: any) {
@@ -110,6 +114,7 @@ export default class Map extends React.Component<MapProps, MapState> {
 
         this.updateTotalFlights = this.updateTotalFlights.bind(this);
         this.updateFlightData = this.updateFlightData.bind(this);
+        this.updateSearchedFlight = this.updateSearchedFlight.bind(this);
         this.selectTile = this.selectTile.bind(this);
     }
 
@@ -135,6 +140,10 @@ export default class Map extends React.Component<MapProps, MapState> {
         this.setState({flightData: data});
     }
 
+    updateSearchedFlight(flightName: string) {
+        this.setState({searchedFlight: flightName});
+    }
+
     selectTile(tile: string | null) {
         if (!tile) {
             return this.availableTileSets[0];
@@ -157,7 +166,7 @@ export default class Map extends React.Component<MapProps, MapState> {
                     zoom={5}
                     scrollWheelZoom={true}>
                     <TileLayer attribution={this.state.selectedTile.attribution} url={this.state.selectedTile.url} />
-                    <SearchBar flightData={this.state.flightData}/>
+                    <SearchBar flightData={this.state.flightData} updateSearchedFlight={this.updateSearchedFlight}/>
                     <FlightsLayer
                         planeColor={this.state.selectedTile.planeColor}
                         planeHighlightColor={this.state.selectedTile.planeHighlightColor}
@@ -166,6 +175,7 @@ export default class Map extends React.Component<MapProps, MapState> {
                         updateFlightData={this.updateFlightData}
                         iconsUseShadow={this.state.selectedTile.iconsUseShadow}
                         currentFlight={this.state.currentFlight}
+                        searchedFlight={this.state.searchedFlight}
                     />
                     <InfoPanel totalFlights={this.state.totalFlights} tiles={this.availableTileSets} changeTiles={this.selectTile}/>
                 </MapContainer>
@@ -280,7 +290,7 @@ class FlightsLayer extends React.Component<FlightsProps, FlightsState> {
                                 iconAnchor: [14, 10],
                                 className: 'planeIcon',
                                 html: `<i 
-                                style="font-size: 1.75rem; color: ${flight.flight === this.props.currentFlight ? this.props.planeHighlightColor : this.props.planeColor};transform-origin: center; transform: rotate(${flight.heading}deg);" 
+                                style="font-size: 1.75rem; color: ${flight.flight === this.props.currentFlight ? this.props.planeHighlightColor : (this.props.searchedFlight === flight.flight) ? this.props.planeHighlightColor : this.props.planeColor};transform-origin: center; transform: rotate(${flight.heading}deg);" 
                                 class="material-icons ${this.props.iconsUseShadow ? 'map-icon-shadow' : ''}">flight</i>`
                             })}>
                             <Popup onOpen={() => this.getAirports(flight.origin, flight.destination)} onClose={() => this.clearAirports()}>
@@ -347,13 +357,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     }
 
     handleSearch() {
-        const search = this.state.searchValue;
-
-        this.props.flightData.map((flight, index) => {
-            if (flight.flight === search) {
-                console.log(`${flight.flight} is at index ${index}`);
-            }
-        });
+        this.props.updateSearchedFlight(this.state.searchValue);
     }
 
     handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
