@@ -5,7 +5,7 @@ import './App.scss';
 function App() {
     return (
         <div className="App">
-            <Map currentFlight="" disableSearch={false} disableInfo={false} />
+            <Map currentFlight="" disableSearch={false} disableInfo={false} center={[52.164863,4.470761]} zoom={8}/>
         </div>
     );
 }

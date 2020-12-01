@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {TileLayer, MapContainer, Marker, Popup, Tooltip, useMap} from "react-leaflet";
+import {Marker, Popup, Tooltip, useMap} from "react-leaflet";
 import L from "leaflet";
 import {Telex, TelexConnection, Airport, AirportResponse} from "@flybywiresim/api-client";
 
@@ -12,6 +12,8 @@ type FlightsProps = {
     iconsUseShadow: boolean,
     currentFlight: string,
     searchedFlight: string,
+    updateCenter: Function,
+    zoom: number;
 }
 type FlightsState = {
     isUpdating: boolean,
@@ -26,9 +28,12 @@ type SelectedAirportType = {
 
 const FlightsLayer = (props: FlightsProps) => {
 
+    const parentMap = useMap();
+    const currentZoom = parentMap.getZoom();
+
     const [telexData, setTelexData] = useState<TelexConnection[]>([]);
-    const [data, setData] = useState([]);
     const [selectedAirports, setSelectedAirports] = useState<SelectedAirportType[]>([]);
+    const [popupSelectedFlight, setPopupSelectedFlight] = useState("");
 
     useEffect(() => {
         getLocationData(true);
@@ -59,6 +64,13 @@ const FlightsLayer = (props: FlightsProps) => {
         }
     }
 
+    function updateCenter(lat: number, lng: number, zoom: number) {
+        props.updateCenter([lat, lng], zoom);
+        const newZoom = currentZoom > props.zoom ? currentZoom : props.zoom;
+        console.log("Zoom is now " + newZoom);
+        parentMap.setView([lat, lng], newZoom);
+    }
+
     useEffect(() => {
         let didCancel = false;
         getLocationData(didCancel);
@@ -71,6 +83,25 @@ const FlightsLayer = (props: FlightsProps) => {
         };
     }, []);
 
+    useEffect(() => {
+        console.log("Props Current flight updated");
+        telexData.map((flight: TelexConnection) => {
+            if (props.searchedFlight === flight.flight) {
+                console.log("Searched flight");
+                console.log(flight);
+                updateCenter(flight.location.y, flight.location.x, 5);
+            } else if (props.currentFlight === flight.flight) {
+                console.log("Current flight");
+                console.log(flight);
+                updateCenter(flight.location.y, flight.location.x, 5);
+            } else if (popupSelectedFlight === flight.flight) {
+                console.log("Popup flight");
+                console.log(flight);
+                updateCenter(flight.location.y, flight.location.x, 5);
+            }
+        });
+    }, [telexData]);
+
     function getAirports(origin: string, destination: string) {
 
         const airports: SelectedAirportType[] = [];
@@ -80,6 +111,7 @@ const FlightsLayer = (props: FlightsProps) => {
             const originArpt = Airport.get(origin)
                 .then(data => {
                     airports.push({airport: data, tag: origin});
+                    console.log(data);
                 })
                 .catch((e) => {
                     console.error(e);
@@ -118,8 +150,24 @@ const FlightsLayer = (props: FlightsProps) => {
                             html: `<i 
                             style="font-size: 1.75rem; color: ${flight.flight === props.currentFlight ? props.planeHighlightColor : (props.searchedFlight === flight.flight) ? props.planeHighlightColor : props.planeColor};transform-origin: center; transform: rotate(${flight.heading}deg);" 
                             class="material-icons ${props.iconsUseShadow ? 'map-icon-shadow' : ''}">flight</i>`
-                        })}>
-                        <Popup onOpen={() => getAirports(flight.origin, flight.destination)} onClose={() => clearAirports()}>
+                        })}
+                        eventHandlers={{
+                            click: (e) => {
+                                console.log(e);
+                            },
+                            popupopen: (e) => {
+                                console.log("Popup open");
+                                getAirports(flight.origin, flight.destination);
+                                updateCenter(flight.location.y, flight.location.x, 8);
+                                setPopupSelectedFlight(flight.flight);
+                            },
+                            popupclose: (e) => {
+                                console.log("Popup close");
+                                clearAirports();
+                                setPopupSelectedFlight("");
+                            }
+                        }}>
+                        <Popup>
                             <h1>Flight {flight.flight}</h1>
                             {
                                 (flight.origin && flight.destination) ?

@@ -1,7 +1,5 @@
 import React, {useState} from "react";
-import {TileLayer, MapContainer} from "react-leaflet";
-import L from "leaflet";
-
+import {TileLayer, MapContainer, useMap} from "react-leaflet";
 import {TelexConnection} from "@flybywiresim/api-client";
 
 import "leaflet/dist/leaflet.css";
@@ -14,9 +12,12 @@ type MapProps = {
     currentFlight: string,
     disableSearch: boolean,
     disableInfo: boolean,
+    center: [number, number],
+    zoom: number
 }
 
 type TileSet = {
+    id: number,
     value: string,
     name: string,
     attribution: string,
@@ -30,6 +31,7 @@ type TileSet = {
 const Map = (props: MapProps) => {
     const availableTileSets: TileSet[] = [
         {
+            id: 1,
             value: "carto-dark",
             name: "Dark",
             attribution: "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>",
@@ -40,6 +42,7 @@ const Map = (props: MapProps) => {
             iconsUseShadow: true,
         },
         {
+            id: 2,
             value: "carto-light",
             name: "Light",
             attribution: "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>",
@@ -50,6 +53,7 @@ const Map = (props: MapProps) => {
             iconsUseShadow: true,
         },
         {
+            id: 3,
             value: "osm",
             name: "Open Street Map",
             attribution: "&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors",
@@ -66,6 +70,8 @@ const Map = (props: MapProps) => {
     const [selectedTile, setSelectedTile] = useState<TileSet>(findPreferredTile());
     const [flightData, setFlightData] = useState<TelexConnection[]>([]);
     const [searchedFlight, setSearchedFlight] = useState<string>("");
+    const [center, setCenter] = useState(props.center);
+    const [zoom, setZoom] = useState(props.zoom);
 
     function findPreferredTile(): TileSet {
         try {
@@ -105,12 +111,18 @@ const Map = (props: MapProps) => {
         location.reload();
     }
 
+    function updateCenter(center: [number, number], zoom: number) {
+        setCenter(center);
+        setZoom(zoom);
+        console.log("New center is " + center[0] + " , " + center[1]);
+    }
+
     return (
         <div>
             <MapContainer
                 id="mapid"
-                center={[51.505, -0.09]}
-                zoom={5}
+                center={center}
+                zoom={props.zoom}
                 scrollWheelZoom={true}>
                 <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} />
                 {
@@ -128,6 +140,8 @@ const Map = (props: MapProps) => {
                     iconsUseShadow={selectedTile.iconsUseShadow}
                     currentFlight={currentFlight}
                     searchedFlight={searchedFlight}
+                    updateCenter={updateCenter}
+                    zoom={props.zoom}
                 />
                 {
                     !props.disableInfo ?

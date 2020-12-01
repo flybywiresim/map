@@ -7,6 +7,7 @@ type InfoPanelProps = {
 }
 
 type TileSet = {
+    id: number,
     value: string,
     name: string,
     attribution: string,
@@ -33,14 +34,14 @@ const InfoPanel = (props: InfoPanelProps) => {
     }
 
     return (
-        <div className="leaflet-bottom leaflet-left Panel InfoPanel">
+        <div className="leaflet-bottom leaflet-left Panel InfoPanel" id="InfoPanel">
             <p className="PanelText">Total Flights: {props.totalFlights}</p>
             <p className="PanelText">
                 {"Map Style: "}
                 <select defaultValue={retrieveActiveTileSet().value} onChange={(event) => props.changeTiles(event.target.value)}>
                     {
                         props.tiles.map((tiles: TileSet) =>
-                            <option value={tiles.value}>{tiles.name}</option>
+                            <option key={tiles.id} value={tiles.value}>{tiles.name}</option>
                         )
                     }
                 </select>
