@@ -8,7 +8,9 @@ import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
 type MapProps = {
-    currentFlight?: string,
+    currentFlight: string,
+    disableSearch: boolean,
+    disableInfo: boolean,
 }
 
 type FlightsProps = {
@@ -144,7 +146,12 @@ const Map = (props: MapProps) => {
                 zoom={5}
                 scrollWheelZoom={true}>
                 <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} />
-                <SearchBar flightData={flightData} updateSearchedFlight={updateSearchedFlight}/>
+                {
+                    !props.disableSearch ?
+                        <SearchBar flightData={flightData} updateSearchedFlight={updateSearchedFlight}/>
+                        :
+                        <></>
+                }
                 <FlightsLayer
                     planeColor={selectedTile.planeColor}
                     planeHighlightColor={selectedTile.planeHighlightColor}
@@ -155,7 +162,12 @@ const Map = (props: MapProps) => {
                     currentFlight={currentFlight}
                     searchedFlight={searchedFlight}
                 />
-                <InfoPanel totalFlights={totalFlights} tiles={availableTileSets} changeTiles={selectTile}/>
+                {
+                    !props.disableInfo ?
+                        <InfoPanel totalFlights={totalFlights} tiles={availableTileSets} changeTiles={selectTile}/>
+                        :
+                        <></>
+                }
             </MapContainer>
         </div>
     );
