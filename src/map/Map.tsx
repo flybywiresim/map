@@ -266,14 +266,6 @@ class FlightsLayer extends React.Component<FlightsProps, FlightsState> {
         this.setState({selectedAirports: []});
     }
 
-    //moveTo(lat: number, lon: number) {
-    //    const map = useMap();
-    //
-    //    map.panTo([lat, lon], {
-    //        animate: true,
-    //    });
-    //}
-
     render() {
         return (
             <div>
@@ -290,10 +282,7 @@ class FlightsLayer extends React.Component<FlightsProps, FlightsState> {
                                 style="font-size: 1.75rem; color: ${flight.flight === this.props.currentFlight ? this.props.planeHighlightColor : (this.props.searchedFlight === flight.flight) ? this.props.planeHighlightColor : this.props.planeColor};transform-origin: center; transform: rotate(${flight.heading}deg);" 
                                 class="material-icons ${this.props.iconsUseShadow ? 'map-icon-shadow' : ''}">flight</i>`
                             })}>
-                            <Popup onOpen={() => {
-                                this.getAirports(flight.origin, flight.destination);
-                                // this.moveTo(flight.location.y, flight.location.x);
-                            }} onClose={() => this.clearAirports()}>
+                            <Popup onOpen={() => this.getAirports(flight.origin, flight.destination)} onClose={() => this.clearAirports()}>
                                 <h1>Flight {flight.flight}</h1>
                                 {
                                     (flight.origin && flight.destination) ?
