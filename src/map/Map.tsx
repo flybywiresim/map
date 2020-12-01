@@ -1,8 +1,8 @@
-import React, {ChangeEvent, useState} from "react";
-import {TileLayer, MapContainer, Marker, Popup, Tooltip, useMap} from "react-leaflet";
+import React, {useState} from "react";
+import {TileLayer, MapContainer} from "react-leaflet";
 import L from "leaflet";
 
-import {Telex, TelexConnection, Airport, AirportResponse} from "@flybywiresim/api-client";
+import {TelexConnection} from "@flybywiresim/api-client";
 
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";

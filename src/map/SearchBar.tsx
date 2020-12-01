@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState, useEffect, useRef} from "react";
+import React, {ChangeEvent, useState, useEffect} from "react";
 import {TelexConnection} from "@flybywiresim/api-client";
 
 type SearchBarProps = {
@@ -12,20 +12,12 @@ type SearchBarState = {
 
 const SearchBar = (props: SearchBarProps) => {
 
-
-    // componentDidUpdate(prevProps: Readonly<SearchBarProps>) {
-    //     if (prevProps.flightData !== this.props.flightData) {
-    //         const names = this.generateNameList();
-    //         this.setState({nameList: names});
-    //     }
-    // }
-
     const [nameList, setNameList] = useState<string[]>(generateNameList());
     const [searchValue, setSearchValue] = useState("");
     const [prevPropsFD, setPrevPropsFD] = useState(props.flightData);
 
     useEffect(() => {
-        if(prevPropsFD !== props.flightData) {
+        if (prevPropsFD !== props.flightData) {
             const names = generateNameList();
             setNameList(names);
             setPrevPropsFD(props.flightData);
@@ -75,11 +67,6 @@ const SearchBar = (props: SearchBarProps) => {
             </datalist>
         </div>
     );
-
-
-}
+};
 
 export default SearchBar;
-
-
-
