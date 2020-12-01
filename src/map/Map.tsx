@@ -91,6 +91,8 @@ const Map = (props: MapProps) => {
     }
 
     function updateFlightData(data: TelexConnection[]) {
+        console.log("Update flight data in map");
+        console.log(data);
         setFlightData(data);
     }
 

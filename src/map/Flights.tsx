@@ -51,14 +51,17 @@ const FlightsLayer = (props: FlightsProps) => {
                     .then(data => {
                         total = data.total;
                         skip += data.count;
+                        console.log("There are " + total + " planes and we are on " + skip);
                         flights = flights.concat(data.results);
                         setTelexData(flights);
                         console.log("Collected " + total);
                         props.updateTotalFlights(total);
+                        props.updateFlightData(flights);
                     })
                     .catch((err) => {
                         console.error(err);
                     });
+                console.log(flights.length);
             }
             while (total > skip);
         }
@@ -88,15 +91,15 @@ const FlightsLayer = (props: FlightsProps) => {
         telexData.map((flight: TelexConnection) => {
             if (props.searchedFlight === flight.flight) {
                 console.log("Searched flight");
-                console.log(flight);
+                //console.log(flight);
                 updateCenter(flight.location.y, flight.location.x, 5);
             } else if (props.currentFlight === flight.flight) {
                 console.log("Current flight");
-                console.log(flight);
+                //console.log(flight);
                 updateCenter(flight.location.y, flight.location.x, 5);
             } else if (popupSelectedFlight === flight.flight) {
                 console.log("Popup flight");
-                console.log(flight);
+                //console.log(flight);
                 updateCenter(flight.location.y, flight.location.x, 5);
             }
         });
