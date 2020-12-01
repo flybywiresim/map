@@ -39,46 +39,74 @@ const FlightsLayer = (props: FlightsProps) => {
         getLocationData(true);
     }, []);
 
-    function getLocationData(didCancel = false) {
-        console.log("Starting update");
+    // function getLocationData(didCancel = false) {
+    //     console.log("Starting update");
 
-        let flights: TelexConnection[] = [];
-        let skip = 0;
+    //     let flights: TelexConnection[] = [];
+    //     let skip = 0;
+    //     let total = 0;
+    //     if (!didCancel) {
+    //         do {
+    //             Telex.fetchConnections(skip, 100)
+    //                 .then(data => {
+    //                     total = data.total;
+    //                     skip += data.count;
+    //                     console.log("There are " + total + " planes and we are on " + skip);
+    //                     flights = flights.concat(data.results);
+    //                     setTelexData(flights);
+    //                     console.log("Collected " + total);
+    //                     props.updateTotalFlights(total);
+    //                     props.updateFlightData(flights);
+    //                 })
+    //                 .catch((err) => {
+    //                     console.error(err);
+    //                 });
+    //             console.log(flights.length);
+    //         }
+    //         while (total > skip);
+    //     }
+    // }
+
+    const getLocationData = async (didCancel = false, skip = 0, numberFlights = 100): Promise<TelexConnection[]> => {
+
         let total = 0;
+
         if (!didCancel) {
-            do {
-                Telex.fetchConnections(skip, 100)
-                    .then(data => {
-                        total = data.total;
-                        skip += data.count;
-                        console.log("There are " + total + " planes and we are on " + skip);
-                        flights = flights.concat(data.results);
-                        setTelexData(flights);
-                        console.log("Collected " + total);
-                        props.updateTotalFlights(total);
-                        props.updateFlightData(flights);
-                    })
-                    .catch((err) => {
-                        console.error(err);
-                    });
-                console.log(flights.length);
+            const data = await Telex.fetchConnections(skip, numberFlights);
+            total = data.total;
+            skip += data.count;
+            const flights = data.results;
+            if (total > skip) {
+                return flights.concat(await getLocationData(false, skip, numberFlights));
+            } else {
+                props.updateTotalFlights(total);
+                return flights;
             }
-            while (total > skip);
+
         }
-    }
+
+        return [];
+    };
 
     function updateCenter(lat: number, lng: number, zoom: number) {
         props.updateCenter([lat, lng], zoom);
         const newZoom = currentZoom > props.zoom ? currentZoom : props.zoom;
-        console.log("Zoom is now " + newZoom);
         parentMap.setView([lat, lng], newZoom);
     }
 
     useEffect(() => {
         let didCancel = false;
-        getLocationData(didCancel);
+        getLocationData(didCancel)
+            .then(flights => {
+                setTelexData(flights);
+                props.updateFlightData(flights);
+            });
         const interval = setInterval(() => {
-            getLocationData(didCancel);
+            getLocationData(didCancel)
+                .then(flights => {
+                    setTelexData(flights);
+                    props.updateFlightData(flights);
+                });
         }, 10000);
         return () => {
             didCancel = true;
@@ -87,19 +115,12 @@ const FlightsLayer = (props: FlightsProps) => {
     }, []);
 
     useEffect(() => {
-        console.log("Props Current flight updated");
         telexData.map((flight: TelexConnection) => {
             if (props.searchedFlight === flight.flight) {
-                console.log("Searched flight");
-                //console.log(flight);
                 updateCenter(flight.location.y, flight.location.x, 5);
             } else if (props.currentFlight === flight.flight) {
-                console.log("Current flight");
-                //console.log(flight);
                 updateCenter(flight.location.y, flight.location.x, 5);
             } else if (popupSelectedFlight === flight.flight) {
-                console.log("Popup flight");
-                //console.log(flight);
                 updateCenter(flight.location.y, flight.location.x, 5);
             }
         });

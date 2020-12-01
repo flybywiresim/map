@@ -20,13 +20,9 @@ const SearchBar = (props: SearchBarProps) => {
         const names = generateNameList();
         setNameList(names);
         setPrevPropsFD(props.flightData);
-        console.log("First time running search");
-        console.log(names);
     }, []);
 
     useEffect(() => {
-        console.log("Flight data has changed");
-        console.log(props.flightData);
         if (prevPropsFD !== props.flightData) {
             const names = generateNameList();
             setNameList(names);
@@ -50,7 +46,6 @@ const SearchBar = (props: SearchBarProps) => {
 
     function generateNameList() {
         const data = props.flightData;
-        console.log(data);
         const nameList: string[] = [];
         data.map(flight => {
             nameList.push(flight.flight);

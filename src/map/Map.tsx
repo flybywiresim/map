@@ -91,8 +91,6 @@ const Map = (props: MapProps) => {
     }
 
     function updateFlightData(data: TelexConnection[]) {
-        console.log("Update flight data in map");
-        console.log(data);
         setFlightData(data);
     }
 
@@ -116,7 +114,6 @@ const Map = (props: MapProps) => {
     function updateCenter(center: [number, number], zoom: number) {
         setCenter(center);
         setZoom(zoom);
-        console.log("New center is " + center[0] + " , " + center[1]);
     }
 
     return (
