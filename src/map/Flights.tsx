@@ -39,34 +39,6 @@ const FlightsLayer = (props: FlightsProps) => {
         getLocationData(true);
     }, []);
 
-    // function getLocationData(didCancel = false) {
-    //     console.log("Starting update");
-
-    //     let flights: TelexConnection[] = [];
-    //     let skip = 0;
-    //     let total = 0;
-    //     if (!didCancel) {
-    //         do {
-    //             Telex.fetchConnections(skip, 100)
-    //                 .then(data => {
-    //                     total = data.total;
-    //                     skip += data.count;
-    //                     console.log("There are " + total + " planes and we are on " + skip);
-    //                     flights = flights.concat(data.results);
-    //                     setTelexData(flights);
-    //                     console.log("Collected " + total);
-    //                     props.updateTotalFlights(total);
-    //                     props.updateFlightData(flights);
-    //                 })
-    //                 .catch((err) => {
-    //                     console.error(err);
-    //                 });
-    //             console.log(flights.length);
-    //         }
-    //         while (total > skip);
-    //     }
-    // }
-
     const getLocationData = async (didCancel = false, skip = 0, numberFlights = 100): Promise<TelexConnection[]> => {
 
         let total = 0;
@@ -91,7 +63,11 @@ const FlightsLayer = (props: FlightsProps) => {
     function updateCenter(lat: number, lng: number, zoom: number) {
         props.updateCenter([lat, lng], zoom);
         const newZoom = currentZoom > props.zoom ? currentZoom : props.zoom;
-        parentMap.setView([lat, lng], newZoom);
+        //parentMap.setView([lat, lng], newZoom);
+        parentMap.flyTo([lat, lng], newZoom, {
+            animate: true,
+            duration: 1.0
+        });
     }
 
     useEffect(() => {
@@ -135,7 +111,6 @@ const FlightsLayer = (props: FlightsProps) => {
             const originArpt = Airport.get(origin)
                 .then(data => {
                     airports.push({airport: data, tag: origin});
-                    console.log(data);
                 })
                 .catch((e) => {
                     console.error(e);
@@ -176,17 +151,12 @@ const FlightsLayer = (props: FlightsProps) => {
                             class="material-icons ${props.iconsUseShadow ? 'map-icon-shadow' : ''}">flight</i>`
                         })}
                         eventHandlers={{
-                            click: (e) => {
-                                console.log(e);
-                            },
                             popupopen: (e) => {
-                                console.log("Popup open");
-                                getAirports(flight.origin, flight.destination);
                                 updateCenter(flight.location.y, flight.location.x, 8);
                                 setPopupSelectedFlight(flight.flight);
+                                getAirports(flight.origin, flight.destination);
                             },
                             popupclose: (e) => {
-                                console.log("Popup close");
                                 clearAirports();
                                 setPopupSelectedFlight("");
                             }
@@ -207,6 +177,7 @@ const FlightsLayer = (props: FlightsProps) => {
             {
                 selectedAirports.map((airport: SelectedAirportType) =>
                     <Marker
+                        key={airport.airport.icao}
                         position={[airport.airport.lat, airport.airport.lon]}
                         icon={L.divIcon({
                             iconSize: [20, 20],

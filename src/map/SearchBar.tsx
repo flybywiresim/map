@@ -67,7 +67,7 @@ const SearchBar = (props: SearchBarProps) => {
             <datalist id="nameList">
                 {
                     nameList.map(name =>
-                        <option value={name} />
+                        <option key={name} value={name} />
                     )
                 }
             </datalist>
