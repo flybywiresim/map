@@ -10,7 +10,6 @@ type SearchBarState = {
     searchValue: string,
 }
 
-
 class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     state: SearchBarState = {
         nameList: this.generateNameList(),
