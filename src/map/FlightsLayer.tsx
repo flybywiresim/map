@@ -150,6 +150,7 @@ class FlightsLayer extends React.Component<FlightsProps, FlightsState> {
                 {
                     this.state.selectedAirports.map(airport =>
                         <Marker
+                            key={airport.airport.icao + '-' + airport.tag}
                             position={[airport.airport.lat, airport.airport.lon]}
                             icon={L.divIcon({
                                 iconSize: [20, 20],
