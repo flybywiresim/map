@@ -1,5 +1,5 @@
 import React from "react";
-import {Marker, Popup, Tooltip, useMap} from "react-leaflet";
+import {Marker, Popup, Tooltip} from "react-leaflet";
 import L from "leaflet";
 
 import {Telex, TelexConnection, Airport, AirportResponse} from "@flybywiresim/api-client";
