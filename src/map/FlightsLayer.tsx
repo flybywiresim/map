@@ -2,8 +2,39 @@ import React from "react";
 import {Marker, Popup, Tooltip, useMap} from "react-leaflet";
 import L from "leaflet";
 
-import {Telex, TelexConnection, Airport} from "@flybywiresim/api-client";
+import {Telex, TelexConnection, Airport, AirportResponse} from "@flybywiresim/api-client";
 
+type FlightsProps = {
+    updateTotalFlights: Function,
+    updateFlightData: Function,
+    planeColor: string,
+    planeHighlightColor: string,
+    airportColor: string,
+    iconsUseShadow: boolean,
+    currentFlight: string,
+    searchedFlight: string,
+}
+type FlightsState = {
+    isUpdating: boolean,
+    data: TelexConnection[],
+    selectedAirports: SelectedAirportType[],
+}
+
+type SelectedAirportType = {
+    airport: AirportResponse,
+    tag: string
+}
+
+type TileSet = {
+    value: string,
+    name: string,
+    attribution: string,
+    url: string,
+    planeColor: string,
+    planeHighlightColor: string,
+    airportColor: string,
+    iconsUseShadow: boolean,
+}
 
 class FlightsLayer extends React.Component<FlightsProps, FlightsState> {
     constructor(props: FlightsProps) {
@@ -149,3 +180,5 @@ class FlightsLayer extends React.Component<FlightsProps, FlightsState> {
         );
     }
 }
+
+export default FlightsLayer;
