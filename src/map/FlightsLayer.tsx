@@ -25,17 +25,6 @@ type SelectedAirportType = {
     tag: string
 }
 
-type TileSet = {
-    value: string,
-    name: string,
-    attribution: string,
-    url: string,
-    planeColor: string,
-    planeHighlightColor: string,
-    airportColor: string,
-    iconsUseShadow: boolean,
-}
-
 class FlightsLayer extends React.Component<FlightsProps, FlightsState> {
     constructor(props: FlightsProps) {
         super(props);
