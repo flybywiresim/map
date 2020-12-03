@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState} from "react";
+import React, {ChangeEvent, useState, useEffect} from "react";
 import {TileLayer, MapContainer, Marker, Popup, Tooltip, useMap} from "react-leaflet";
 import L from "leaflet";
 
@@ -71,6 +71,11 @@ const Map = (props: MapProps) => {
     const [selectedTile, setSelectedTile] = useState<TileSet>(findPreferredTile());
     const [flightData, setFlightData] = useState<TelexConnection[]>([]);
     const [searchedFlight, setSearchedFlight] = useState<string>("");
+    const [keyMap, setKeyMap] = useState<number>(Math.random());
+
+    useEffect(() => {
+        setKeyMap(Math.random());
+    }, [selectedTile]);
 
     function findPreferredTile(): TileSet {
         try {
@@ -114,6 +119,7 @@ const Map = (props: MapProps) => {
         <div>
             <MapContainer
                 id="mapid"
+                key={keyMap}
                 center={[51.505, -0.09]}
                 zoom={5}
                 scrollWheelZoom={true}>
