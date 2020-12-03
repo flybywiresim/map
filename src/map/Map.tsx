@@ -4,6 +4,9 @@ import L from "leaflet";
 
 import {Telex, TelexConnection, Airport, AirportResponse} from "@flybywiresim/api-client";
 
+import SearchBar from './Search';
+import InfoPanel from './InfoPanel';
+
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
@@ -34,22 +37,8 @@ type SelectedAirportType = {
     tag: string
 }
 
-type SearchBarProps = {
-    flightData: TelexConnection[],
-    updateSearchedFlight: Function,
-}
-type SearchBarState = {
-    nameList: string[],
-    searchValue: string,
-}
-
-type InfoPanelProps = {
-    totalFlights: number,
-    tiles: TileSet[],
-    changeTiles: Function,
-}
-
 type TileSet = {
+    id: number,
     value: string,
     name: string,
     attribution: string,
@@ -63,6 +52,7 @@ type TileSet = {
 const Map = (props: MapProps) => {
     const availableTileSets: TileSet[] = [
         {
+            id: 1,
             value: "carto-dark",
             name: "Dark",
             attribution: "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>",
@@ -73,6 +63,7 @@ const Map = (props: MapProps) => {
             iconsUseShadow: true,
         },
         {
+            id: 2,
             value: "carto-light",
             name: "Light",
             attribution: "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>",
@@ -83,6 +74,7 @@ const Map = (props: MapProps) => {
             iconsUseShadow: true,
         },
         {
+            id: 3,
             value: "osm",
             name: "Open Street Map",
             attribution: "&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors",
@@ -313,99 +305,6 @@ class FlightsLayer extends React.Component<FlightsProps, FlightsState> {
                         </Marker>
                     )
                 }
-            </div>
-        );
-    }
-}
-
-class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
-    state: SearchBarState = {
-        nameList: this.generateNameList(),
-        searchValue: "",
-    }
-
-    componentDidUpdate(prevProps: Readonly<SearchBarProps>) {
-        if (prevProps.flightData !== this.props.flightData) {
-            const names = this.generateNameList();
-            this.setState({nameList: names});
-        }
-    }
-
-    generateNameList() {
-        const data = this.props.flightData;
-        const nameList: string[] = [];
-        data.map(flight => {
-            nameList.push(flight.flight);
-        });
-
-        return nameList;
-    }
-
-    handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-        this.setState({searchValue: event.target.value.toString()});
-    }
-
-    handleSearch() {
-        this.props.updateSearchedFlight(this.state.searchValue);
-    }
-
-    handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            this.handleSearch();
-        }
-    }
-
-    render() {
-        return (
-            <div className="leaflet-top leaflet-left Panel SearchPanel">
-                <p className="PanelText">Search: </p>
-                <input
-                    type="text"
-                    list="nameList"
-                    placeholder="Flight Number"
-                    onChange={this.handleSearchChange}
-                    onKeyPress={this.handleEnterPress}/>
-                <button onClick={this.handleSearch.bind(this)}>Search</button>
-                <datalist id="nameList">
-                    {
-                        this.state.nameList.map(name =>
-                            <option value={name} />
-                        )
-                    }
-                </datalist>
-            </div>
-        );
-    }
-}
-
-class InfoPanel extends React.Component<InfoPanelProps, any> {
-    retrieveActiveTileSet() {
-        try {
-            const storedTiles = window.localStorage.getItem("PreferredTileset");
-            if (!storedTiles) {
-                return this.props.tiles[0];
-            }
-
-            return this.props.tiles.find(x => x.value === storedTiles) || this.props.tiles[0];
-        } catch {
-            return this.props.tiles[0];
-        }
-    }
-
-    render() {
-        return (
-            <div className="leaflet-bottom leaflet-left Panel InfoPanel">
-                <p className="PanelText">Total Flights: {this.props.totalFlights}</p>
-                <p className="PanelText">
-                    {"Map Style: "}
-                    <select defaultValue={this.retrieveActiveTileSet().value} onChange={(event) => this.props.changeTiles(event.target.value)}>
-                        {
-                            this.props.tiles.map((tiles: TileSet) =>
-                                <option value={tiles.value}>{tiles.name}</option>
-                            )
-                        }
-                    </select>
-                </p>
             </div>
         );
     }
