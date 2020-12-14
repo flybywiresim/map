@@ -14,6 +14,7 @@ type MapProps = {
     currentFlight: string,
     disableSearch: boolean,
     disableInfo: boolean,
+    disableFlights: boolean,
 }
 
 type TileSet = {
@@ -129,16 +130,22 @@ const Map = (props: MapProps) => {
                         :
                         <></>
                 }
-                <FlightsLayer
-                    planeColor={selectedTile.planeColor}
-                    planeHighlightColor={selectedTile.planeHighlightColor}
-                    airportColor={selectedTile.airportColor}
-                    updateTotalFlights={updateTotalFlights}
-                    updateFlightData={updateFlightData}
-                    iconsUseShadow={selectedTile.iconsUseShadow}
-                    currentFlight={currentFlight}
-                    searchedFlight={searchedFlight}
-                />
+                {
+                    !props.disableFlights ?
+                        <FlightsLayer
+                            planeColor={selectedTile.planeColor}
+                            planeHighlightColor={selectedTile.planeHighlightColor}
+                            airportColor={selectedTile.airportColor}
+                            updateTotalFlights={updateTotalFlights}
+                            updateFlightData={updateFlightData}
+                            iconsUseShadow={selectedTile.iconsUseShadow}
+                            currentFlight={currentFlight}
+                            searchedFlight={searchedFlight}
+                        />
+                        :
+                        <>
+                        </>
+                }
                 {
                     !props.disableInfo ?
                         <InfoPanel totalFlights={totalFlights} tiles={availableTileSets} changeTiles={selectTile}/>
