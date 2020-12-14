@@ -45,7 +45,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prepare": "babel src/map --out-dir dist --extensions .tsx --copy-files && tsc --emitDeclarationOnly --declaration true --jsx react --esModuleInterop true --outDir ./dist ./src/map/*.tsx"
+    "prepare": "babel src/map --out-dir dist --extensions .tsx --copy-files"
   },
   "eslintConfig": {
     "extends": [
