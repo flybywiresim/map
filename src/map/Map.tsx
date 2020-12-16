@@ -111,8 +111,6 @@ const Map = (props: MapProps) => {
 
         setSelectedTile(newTiles);
         window.localStorage.setItem("PreferredTileset", newTiles.value);
-
-        //location.reload();
     }
 
     return (
