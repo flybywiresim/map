@@ -84,7 +84,13 @@ class FlightsLayer extends React.Component<FlightsProps, FlightsState> {
             data: flights
         });
         this.props.updateFlightData(flights);
-        this.props.updateTotalFlights(total);
+
+        try {
+            this.props.updateTotalFlights(await Telex.countConnections());
+        } catch (e) {
+            console.error(e);
+        }
+
         this.intervalID = setTimeout(this.getLocationData.bind(this), 10000);
         console.log("Update finished");
     }
