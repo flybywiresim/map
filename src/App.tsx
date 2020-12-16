@@ -5,7 +5,7 @@ import './App.scss';
 function App() {
     return (
         <div className="App">
-            `<Map currentFlight="" disableSearch={true} disableInfo={true} disableFlights={true} />`
+            <Map currentFlight="" disableSearch={true} disableInfo={false} disableFlights={false} />
         </div>
     );
 }

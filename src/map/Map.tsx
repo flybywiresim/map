@@ -111,8 +111,6 @@ const Map = (props: MapProps) => {
 
         setSelectedTile(newTiles);
         window.localStorage.setItem("PreferredTileset", newTiles.value);
-
-        //location.reload();
     }
 
     return (
@@ -122,7 +120,8 @@ const Map = (props: MapProps) => {
                 key={keyMap}
                 center={[51.505, -0.09]}
                 zoom={5}
-                scrollWheelZoom={true}>
+                scrollWheelZoom={true}
+                worldCopyJump={true}>
                 <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} />
                 {
                     !props.disableSearch ?
