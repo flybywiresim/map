@@ -140,7 +140,10 @@ const FlightsLayer = (props: FlightsProps) => {
                             iconAnchor: [14, 10],
                             className: 'planeIcon',
                             html: `<i 
-                                style="font-size: 1.75rem; color: ${flight.flight === props.currentFlight ? props.planeHighlightColor : (props.searchedFlight === flight.flight) ? props.planeHighlightColor : props.planeColor};transform-origin: center; transform: rotate(${flight.heading}deg);" 
+                                style="font-size: 1.75rem;
+                                       color: ${flight.flight === props.currentFlight ? props.planeHighlightColor : (props.searchedFlight === flight.flight) ? props.planeHighlightColor : props.planeColor};
+                                       transform-origin: center;
+                                       transform: rotate(${flight.heading}deg);" 
                                 class="material-icons ${props.iconsUseShadow ? 'map-icon-shadow' : ''}">flight</i>`
                         })}>
                         <Popup onOpen={() => getAirports(flight.origin, flight.destination)} onClose={() => clearAirports()}>

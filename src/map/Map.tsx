@@ -66,7 +66,7 @@ const Map = (props: MapProps) => {
         }
     ];
 
-    const [currentFlight, setCurrentFlight] = useState<string>("");
+    const [currentFlight, setCurrentFlight] = useState<string>(props.currentFlight);
     const [totalFlights, setTotalFlights] = useState<number>(0);
     const [selectedTile, setSelectedTile] = useState<TileSet>(findPreferredTile());
     const [flightData, setFlightData] = useState<TelexConnection[]>([]);
