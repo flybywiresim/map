@@ -16,6 +16,7 @@ type MapProps = {
     disableFlights: boolean,
     forceTileset?: string,
     currentFlight?: string,
+    disableScroll?: boolean,
 }
 
 type TileSet = {
@@ -128,7 +129,7 @@ const Map = (props: MapProps) => {
                 key={keyMap}
                 center={[51.505, -0.09]}
                 zoom={5}
-                scrollWheelZoom={true}
+                scrollWheelZoom={!props.disableScroll}
                 worldCopyJump={true}>
                 <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} />
                 {
