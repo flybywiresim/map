@@ -26,20 +26,16 @@ const FlightsLayer = (props: FlightsProps) => {
     const [selectedAirports, setSelectedAirports] = useState<SelectedAirportType[]>([]);
     const [refreshInterval, setRefreshInterval] = useState(15000);
 
-    let interval: any;
-
     const map = useMapEvents({
         moveend: event => {
-            getLocationData(true, event.target.getBounds());
-            clearInterval(interval);
-            interval = setInterval(() => getLocationData(false, map.getBounds()), refreshInterval);
+            getLocationData(false, event.target.getBounds());
         }
     });
 
     useEffect(() => {
         if (refreshInterval && refreshInterval > 0) {
-            interval = setInterval(() => getLocationData(false, map.getBounds()), refreshInterval);
-            getLocationData(false, map.getBounds());
+            const interval = setInterval(() => getLocationData(false, map.getBounds()), refreshInterval);
+            getLocationData(true, map.getBounds());
             return () => clearInterval(interval);
         }
     }, [refreshInterval]);
