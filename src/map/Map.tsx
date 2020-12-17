@@ -11,10 +11,11 @@ import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
 type MapProps = {
-    currentFlight: string,
     disableSearch: boolean,
     disableInfo: boolean,
     disableFlights: boolean,
+    forceTileset?: string,
+    currentFlight?: string,
 }
 
 type TileSet = {
@@ -66,9 +67,9 @@ const Map = (props: MapProps) => {
         }
     ];
 
-    const [currentFlight, setCurrentFlight] = useState<string>(props.currentFlight);
+    const [currentFlight, setCurrentFlight] = useState<string>(props.currentFlight || "");
     const [totalFlights, setTotalFlights] = useState<number>(0);
-    const [selectedTile, setSelectedTile] = useState<TileSet>(findPreferredTile());
+    const [selectedTile, setSelectedTile] = useState<TileSet>(setAndFind(props.forceTileset || ""));
     const [flightData, setFlightData] = useState<TelexConnection[]>([]);
     const [searchedFlight, setSearchedFlight] = useState<string>("");
     const [keyMap, setKeyMap] = useState<number>(Math.random());
@@ -76,6 +77,13 @@ const Map = (props: MapProps) => {
     useEffect(() => {
         setKeyMap(Math.random());
     }, [selectedTile]);
+
+    function setAndFind(key: string): TileSet {
+        if (key) {
+            window.localStorage.setItem("PreferredTileset", key);
+        }
+        return findPreferredTile();
+    }
 
     function findPreferredTile(): TileSet {
         try {
