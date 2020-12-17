@@ -21,24 +21,32 @@ type SelectedAirportType = {
 }
 
 const FlightsLayer = (props: FlightsProps) => {
+    const map = useMapEvents({
+        moveend: event => {
+            const newBounds = event.target.getBounds();
+
+            if (!bounds.contains(newBounds)) {
+                setBounds(newBounds);
+            }
+        }
+    });
+
     const [isUpdating, setIsUpdating] = useState<boolean>(false);
     const [data, setData] = useState<TelexConnection[]>([]);
     const [selectedAirports, setSelectedAirports] = useState<SelectedAirportType[]>([]);
     const [refreshInterval, setRefreshInterval] = useState(15000);
-
-    const map = useMapEvents({
-        moveend: event => {
-            getLocationData(false, event.target.getBounds());
-        }
-    });
+    const [bounds, setBounds] = useState<LatLngBounds>(map.getBounds());
 
     useEffect(() => {
         if (refreshInterval && refreshInterval > 0) {
             const interval = setInterval(() => getLocationData(false, map.getBounds()), refreshInterval);
-            getLocationData(true, map.getBounds());
             return () => clearInterval(interval);
         }
     }, [refreshInterval]);
+
+    useEffect(() => {
+        getLocationData(false, bounds);
+    }, [bounds]);
 
     async function getLocationData(staged: boolean = false, bounds?: LatLngBounds) {
         console.log("Starting update");
