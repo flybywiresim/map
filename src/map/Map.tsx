@@ -19,7 +19,7 @@ type MapProps = {
     disableScroll?: boolean,
 }
 
-type TileSet = {
+export type TileSet = {
     id: number,
     value: string,
     name: string,
@@ -28,7 +28,6 @@ type TileSet = {
     planeColor: string,
     planeHighlightColor: string,
     airportColor: string,
-    iconsUseShadow: boolean,
 }
 
 const Map = (props: MapProps) => {
@@ -42,7 +41,6 @@ const Map = (props: MapProps) => {
             planeColor: "#00c2cb",
             planeHighlightColor: "#197bff",
             airportColor: "#ffffff",
-            iconsUseShadow: true,
         },
         {
             id: 2,
@@ -53,7 +51,6 @@ const Map = (props: MapProps) => {
             planeColor: "#00c2cb",
             planeHighlightColor: "#197bff",
             airportColor: "#545454",
-            iconsUseShadow: true,
         },
         {
             id: 3,
@@ -64,7 +61,6 @@ const Map = (props: MapProps) => {
             planeColor: "#00c2cb",
             planeHighlightColor: "#197bff",
             airportColor: "#545454",
-            iconsUseShadow: true,
         }
     ];
 
@@ -146,7 +142,6 @@ const Map = (props: MapProps) => {
                             airportColor={selectedTile.airportColor}
                             updateTotalFlights={updateTotalFlights}
                             updateFlightData={updateFlightData}
-                            iconsUseShadow={selectedTile.iconsUseShadow}
                             currentFlight={currentFlight}
                             searchedFlight={searchedFlight}
                         />

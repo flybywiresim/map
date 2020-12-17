@@ -1,16 +1,5 @@
 import React from "react";
-
-type TileSet = {
-    id: number;
-    value: string,
-    name: string,
-    attribution: string,
-    url: string,
-    planeColor: string,
-    planeHighlightColor: string,
-    airportColor: string,
-    iconsUseShadow: boolean,
-}
+import {TileSet} from "./Map";
 
 type InfoPanelProps = {
     totalFlights: number,

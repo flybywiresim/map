@@ -16,7 +16,6 @@
   "dependencies": {
     "@flybywiresim/api-client": "^0.3.0",
     "leaflet": "^1.7.1",
-    "material-design-icons": "^3.0.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-leaflet": "^3.0.2"

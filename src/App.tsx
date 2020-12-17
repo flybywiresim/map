@@ -5,7 +5,7 @@ import './App.scss';
 function App() {
     return (
         <div className="App">
-            <Map forceTileset={"carto-dark"} disableSearch={true} disableInfo={true} disableFlights={false} />
+            <Map disableSearch={true} disableInfo={false} disableFlights={false} />
         </div>
     );
 }
