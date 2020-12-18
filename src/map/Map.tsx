@@ -11,9 +11,9 @@ import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
 type MapProps = {
-    disableSearch: boolean,
-    disableInfo: boolean,
-    disableFlights: boolean,
+    disableSearch?: boolean,
+    disableInfo?: boolean,
+    disableFlights?: boolean,
     forceTileset?: string,
     currentFlight?: string,
     disableScroll?: boolean,
