@@ -33,7 +33,7 @@ const FlightsLayer = (props: FlightsProps) => {
     const [isUpdating, setIsUpdating] = useState<boolean>(false);
     const [data, setData] = useState<TelexConnection[]>([]);
     const [selectedAirports, setSelectedAirports] = useState<SelectedAirportType[]>([]);
-    const [refreshInterval, setRefreshInterval] = useState(8000000);
+    const [refreshInterval, setRefreshInterval] = useState(10000);
     const [bounds, setBounds] = useState<LatLngBounds>(map.getBounds());
 
     useEffect(() => {
