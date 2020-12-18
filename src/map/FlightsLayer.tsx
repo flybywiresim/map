@@ -64,10 +64,10 @@ const FlightsLayer = (props: FlightsProps) => {
         };
         if (bounds) {
             apiBounds = {
-                north: Math.min(bounds.getNorth(), 90),
-                east: Math.min(bounds.getEast(), 180),
-                south: Math.max(bounds.getSouth(), -90),
-                west: Math.max(bounds.getWest(), -180)
+                north: Math.ceil(Math.min(bounds.getNorth(), 90)),
+                east: Math.ceil(Math.min(bounds.getEast(), 180)),
+                south: Math.floor(Math.max(bounds.getSouth(), -90)),
+                west: Math.floor(Math.max(bounds.getWest(), -180))
             };
         }
 
