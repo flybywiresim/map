@@ -145,7 +145,7 @@ const Map = (props: MapProps) => {
                             updateFlightData={updateFlightData}
                             currentFlight={currentFlight}
                             searchedFlight={searchedFlight}
-                            refreshInterval={props.refreshInterval ?? 1_000}
+                            refreshInterval={props.refreshInterval ?? 10_000}
                         />
                         :
                         <>
