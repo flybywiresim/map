@@ -17,6 +17,7 @@ type MapProps = {
     forceTileset?: string,
     currentFlight?: string,
     disableScroll?: boolean,
+    refreshInterval?: number,
 }
 
 export type TileSet = {
@@ -144,6 +145,7 @@ const Map = (props: MapProps) => {
                             updateFlightData={updateFlightData}
                             currentFlight={currentFlight}
                             searchedFlight={searchedFlight}
+                            refreshInterval={props.refreshInterval ?? 1_000}
                         />
                         :
                         <>

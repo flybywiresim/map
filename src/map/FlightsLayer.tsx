@@ -12,6 +12,7 @@ type FlightsProps = {
     airportColor: string,
     currentFlight: string,
     searchedFlight: string,
+    refreshInterval: number
 }
 
 type SelectedAirportType = {
@@ -33,15 +34,14 @@ const FlightsLayer = (props: FlightsProps) => {
     const [isUpdating, setIsUpdating] = useState<boolean>(false);
     const [data, setData] = useState<TelexConnection[]>([]);
     const [selectedAirports, setSelectedAirports] = useState<SelectedAirportType[]>([]);
-    const [refreshInterval, setRefreshInterval] = useState(10000);
     const [bounds, setBounds] = useState<LatLngBounds>(map.getBounds());
 
     useEffect(() => {
-        if (refreshInterval && refreshInterval > 0) {
-            const interval = setInterval(() => getLocationData(false, map.getBounds()), refreshInterval);
+        if (props.refreshInterval && props.refreshInterval > 0) {
+            const interval = setInterval(() => getLocationData(false, map.getBounds()), props.refreshInterval);
             return () => clearInterval(interval);
         }
-    }, [refreshInterval]);
+    }, [props.refreshInterval]);
 
     useEffect(() => {
         getLocationData(false, bounds);
