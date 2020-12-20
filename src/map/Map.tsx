@@ -66,7 +66,6 @@ const Map = (props: MapProps) => {
     ];
 
     const [currentFlight, setCurrentFlight] = useState<string>(props.currentFlight || "");
-    const [totalFlights, setTotalFlights] = useState<number>(0);
     const [selectedTile, setSelectedTile] = useState<TileSet>(setAndFind(props.forceTileset || ""));
     const [flightData, setFlightData] = useState<TelexConnection[]>([]);
     const [searchedFlight, setSearchedFlight] = useState<string>("");
@@ -94,10 +93,6 @@ const Map = (props: MapProps) => {
         } catch {
             return availableTileSets[0];
         }
-    }
-
-    function updateTotalFlights(flights: number) {
-        setTotalFlights(flights);
     }
 
     function updateFlightData(data: TelexConnection[]) {
@@ -141,7 +136,6 @@ const Map = (props: MapProps) => {
                             planeColor={selectedTile.planeColor}
                             planeHighlightColor={selectedTile.planeHighlightColor}
                             airportColor={selectedTile.airportColor}
-                            updateTotalFlights={updateTotalFlights}
                             updateFlightData={updateFlightData}
                             currentFlight={currentFlight}
                             searchedFlight={searchedFlight}
@@ -153,7 +147,8 @@ const Map = (props: MapProps) => {
                 }
                 {
                     !props.disableInfo ?
-                        <InfoPanel totalFlights={totalFlights} tiles={availableTileSets} changeTiles={selectTile}/>
+                        <InfoPanel refreshInterval={props.refreshInterval ?? 10_000}
+                            tiles={availableTileSets} changeTiles={selectTile}/>
                         :
                         <></>
                 }

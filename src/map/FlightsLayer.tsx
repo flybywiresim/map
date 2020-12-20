@@ -5,7 +5,6 @@ import L, {LatLngBounds} from "leaflet";
 import {Telex, TelexConnection, Airport, AirportResponse, Bounds} from "@flybywiresim/api-client";
 
 type FlightsProps = {
-    updateTotalFlights: Function,
     updateFlightData: Function,
     planeColor: string,
     planeHighlightColor: string,
@@ -92,12 +91,6 @@ const FlightsLayer = (props: FlightsProps) => {
         setIsUpdating(false);
         setData(flights);
         props.updateFlightData(flights);
-
-        try {
-            props.updateTotalFlights(await Telex.countConnections());
-        } catch (e) {
-            console.error(e);
-        }
 
         console.log("Update finished");
     }
