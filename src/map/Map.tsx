@@ -151,7 +151,7 @@ const Map = (props: MapProps) => {
                             updateFlightData={updateFlightData}
                             currentFlight={currentFlight}
                             searchedFlight={searchedFlight}
-                            refreshInterval={props.refreshInterval ?? 10_000}
+                            refreshInterval={props.refreshInterval || 10000}
                         />
                         :
                         <>
@@ -159,7 +159,7 @@ const Map = (props: MapProps) => {
                 }
                 {
                     !props.disableInfo ?
-                        <InfoPanel refreshInterval={props.refreshInterval ?? 10_000}
+                        <InfoPanel refreshInterval={props.refreshInterval || 10000}
                             tiles={availableTileSets} changeTiles={selectTile}/>
                         :
                         <></>
