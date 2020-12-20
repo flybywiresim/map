@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Marker, Popup, Tooltip, useMapEvents} from "react-leaflet";
+import {FeatureGroup, Marker, Popup, Tooltip, useMapEvents} from "react-leaflet";
 import L, {LatLngBounds} from "leaflet";
 
 import {Telex, TelexConnection, Airport, AirportResponse, Bounds} from "@flybywiresim/api-client";
@@ -148,7 +148,7 @@ const FlightsLayer = (props: FlightsProps) => {
     }
 
     return (
-        <div>
+        <FeatureGroup>
             {
                 data.map((flight: TelexConnection) =>
                     <Marker
@@ -211,7 +211,7 @@ const FlightsLayer = (props: FlightsProps) => {
                     </Marker>
                 )
             }
-        </div>
+        </FeatureGroup>
     );
 };
 
