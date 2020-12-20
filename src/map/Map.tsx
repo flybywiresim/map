@@ -10,6 +10,13 @@ import InfoPanel from './InfoPanel';
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
+import ArrivalWhite from './icons/arrival_white.png';
+import ArrivalGray from './icons/arrival_gray.png';
+import DepartureWhite from './icons/departure_white.png';
+import DepartureGray from './icons/arrival_gray.png';
+import PlaneCyan from './icons/plane_cyan.png';
+import PlaneBlue from './icons/plane_blue.png';
+
 type MapProps = {
     disableSearch?: boolean,
     disableInfo?: boolean,
@@ -26,9 +33,10 @@ export type TileSet = {
     name: string,
     attribution: string,
     url: string,
-    planeColor: string,
-    planeHighlightColor: string,
-    airportColor: string,
+    planeIcon: string,
+    planeIconHighlight: string,
+    departureIcon: string,
+    arrivalIcon: string,
 }
 
 const Map = (props: MapProps) => {
@@ -39,9 +47,10 @@ const Map = (props: MapProps) => {
             name: "Dark",
             attribution: "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>",
             url: "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png",
-            planeColor: "#00c2cb",
-            planeHighlightColor: "#197bff",
-            airportColor: "#ffffff",
+            planeIcon: PlaneCyan,
+            planeIconHighlight: PlaneBlue,
+            departureIcon: DepartureWhite,
+            arrivalIcon: ArrivalWhite,
         },
         {
             id: 2,
@@ -49,9 +58,10 @@ const Map = (props: MapProps) => {
             name: "Light",
             attribution: "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>",
             url: "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
-            planeColor: "#00c2cb",
-            planeHighlightColor: "#197bff",
-            airportColor: "#545454",
+            planeIcon: PlaneCyan,
+            planeIconHighlight: PlaneBlue,
+            departureIcon: DepartureGray,
+            arrivalIcon: ArrivalGray,
         },
         {
             id: 3,
@@ -59,9 +69,10 @@ const Map = (props: MapProps) => {
             name: "Open Street Map",
             attribution: "&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors",
             url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            planeColor: "#00c2cb",
-            planeHighlightColor: "#197bff",
-            airportColor: "#545454",
+            planeIcon: PlaneCyan,
+            planeIconHighlight: PlaneBlue,
+            departureIcon: DepartureGray,
+            arrivalIcon: ArrivalGray,
         }
     ];
 
@@ -133,9 +144,10 @@ const Map = (props: MapProps) => {
                 {
                     !props.disableFlights ?
                         <FlightsLayer
-                            planeColor={selectedTile.planeColor}
-                            planeHighlightColor={selectedTile.planeHighlightColor}
-                            airportColor={selectedTile.airportColor}
+                            planeIcon={selectedTile.planeIcon}
+                            planeIconHighlight={selectedTile.planeIconHighlight}
+                            departureIcon={selectedTile.departureIcon}
+                            arrivalIcon={selectedTile.arrivalIcon}
                             updateFlightData={updateFlightData}
                             currentFlight={currentFlight}
                             searchedFlight={searchedFlight}
