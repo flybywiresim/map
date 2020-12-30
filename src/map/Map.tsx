@@ -16,6 +16,7 @@ import DepartureWhite from './icons/departure_white.png';
 import DepartureGray from './icons/arrival_gray.png';
 import PlaneCyan from './icons/plane_cyan.png';
 import PlaneBlue from './icons/plane_blue.png';
+import {LatLng} from "leaflet";
 
 type MapProps = {
     disableSearch?: boolean,
@@ -25,6 +26,9 @@ type MapProps = {
     currentFlight?: string,
     disableScroll?: boolean,
     refreshInterval?: number,
+    hideOthers?: boolean,
+    center?: LatLng,
+    zoom?: number,
 }
 
 export type TileSet = {
@@ -126,46 +130,42 @@ const Map = (props: MapProps) => {
     }
 
     return (
-        <div>
-            <MapContainer
-                id="mapid"
-                key={keyMap}
-                center={[51.505, -0.09]}
-                zoom={5}
-                scrollWheelZoom={!props.disableScroll}
-                worldCopyJump={true}>
-                <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} />
-                {
-                    !props.disableSearch ?
-                        <SearchBar flightData={flightData} updateSearchedFlight={updateSearchedFlight}/>
-                        :
-                        <></>
-                }
-                {
-                    !props.disableFlights ?
-                        <FlightsLayer
-                            planeIcon={selectedTile.planeIcon}
-                            planeIconHighlight={selectedTile.planeIconHighlight}
-                            departureIcon={selectedTile.departureIcon}
-                            arrivalIcon={selectedTile.arrivalIcon}
-                            updateFlightData={updateFlightData}
-                            currentFlight={currentFlight}
-                            searchedFlight={searchedFlight}
-                            refreshInterval={props.refreshInterval || 10000}
-                        />
-                        :
-                        <>
-                        </>
-                }
-                {
-                    !props.disableInfo ?
-                        <InfoPanel refreshInterval={props.refreshInterval || 10000}
-                            tiles={availableTileSets} changeTiles={selectTile}/>
-                        :
-                        <></>
-                }
-            </MapContainer>
-        </div>
+        <MapContainer
+            id="mapid"
+            key={keyMap}
+            center={props.center || [50, 8]}
+            zoom={props.zoom || 5}
+            scrollWheelZoom={!props.disableScroll}
+            worldCopyJump={true}>
+            <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} />
+            {
+                (!props.disableFlights) ?
+                    <FlightsLayer
+                        planeIcon={selectedTile.planeIcon}
+                        planeIconHighlight={selectedTile.planeIconHighlight}
+                        departureIcon={selectedTile.departureIcon}
+                        arrivalIcon={selectedTile.arrivalIcon}
+                        updateFlightData={updateFlightData}
+                        currentFlight={currentFlight}
+                        searchedFlight={searchedFlight}
+                        refreshInterval={props.refreshInterval || 10000}
+                        hideOthers={props.hideOthers}
+                    /> : <></>
+            }
+            {
+                !props.disableInfo ?
+                    <InfoPanel refreshInterval={props.refreshInterval || 10000}
+                        tiles={availableTileSets} changeTiles={selectTile}/>
+                    :
+                    <></>
+            }
+            {
+                !props.disableSearch ?
+                    <SearchBar flightData={flightData} updateSearchedFlight={updateSearchedFlight}/>
+                    :
+                    <></>
+            }
+        </MapContainer>
     );
 };
 

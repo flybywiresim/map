@@ -14,7 +14,8 @@ type FlightsProps = {
     arrivalIcon: string,
     currentFlight: string,
     searchedFlight: string,
-    refreshInterval: number
+    refreshInterval: number,
+    hideOthers?: boolean,
 }
 
 const FlightsLayer = (props: FlightsProps) => {
@@ -62,7 +63,14 @@ const FlightsLayer = (props: FlightsProps) => {
             };
         }
 
-        const flights = await Telex.fetchAllConnections(apiBounds, staged ? setData : undefined);
+        let flights: TelexConnection[] = [];
+
+        if (props.hideOthers) {
+            const flt = await Telex.findConnection(props.currentFlight);
+            flights.push(flt);
+        } else {
+            flights = await Telex.fetchAllConnections(apiBounds, staged ? setData : undefined);
+        }
 
         setIsUpdating(false);
         setData(flights);
@@ -72,14 +80,14 @@ const FlightsLayer = (props: FlightsProps) => {
     return (
         <FeatureGroup>
             {
-                data.map((flight: TelexConnection) =>
+                data.map((connection: TelexConnection) =>
                     <FlightMarker
-                        key={flight.id}
-                        flight={flight}
+                        key={connection.id}
+                        connection={connection}
                         icon={props.planeIcon}
                         highlightIcon={props.planeIconHighlight}
-                        isHighlighted={props.searchedFlight === flight.flight || props.currentFlight === flight.flight}
-                        onPopupOpen={() => setSelectedConnection(flight)}
+                        isHighlighted={props.searchedFlight === connection.flight || props.currentFlight === connection.flight}
+                        onPopupOpen={() => setSelectedConnection(connection)}
                         onPopupClose={() => setSelectedConnection(null)} />
                 )
             }
