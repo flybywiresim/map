@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {FeatureGroup, Marker, Popup, Tooltip, useMapEvents} from "react-leaflet";
+import {FeatureGroup, Marker, Popup, useMapEvents} from "react-leaflet";
 import L, {LatLngBounds} from "leaflet";
 
-import {Telex, TelexConnection, Airport, AirportResponse, Bounds} from "@flybywiresim/api-client";
+import {Telex, TelexConnection, Bounds} from "@flybywiresim/api-client";
+import AirportsLayer from "./AirportsLayer";
 
 type FlightsProps = {
     updateFlightData: Function,
@@ -13,11 +14,6 @@ type FlightsProps = {
     currentFlight: string,
     searchedFlight: string,
     refreshInterval: number
-}
-
-type SelectedAirportType = {
-    airport: AirportResponse,
-    tag: string
 }
 
 const FlightsLayer = (props: FlightsProps) => {
@@ -33,8 +29,8 @@ const FlightsLayer = (props: FlightsProps) => {
 
     const [isUpdating, setIsUpdating] = useState<boolean>(false);
     const [data, setData] = useState<TelexConnection[]>([]);
-    const [selectedAirports, setSelectedAirports] = useState<SelectedAirportType[]>([]);
     const [bounds, setBounds] = useState<LatLngBounds>(map.getBounds());
+    const [selectedConnection, setSelectedConnection] = useState<TelexConnection | null>(null);
 
     useEffect(() => {
         if (props.refreshInterval && props.refreshInterval > 0) {
@@ -48,13 +44,7 @@ const FlightsLayer = (props: FlightsProps) => {
     }, [bounds]);
 
     async function getLocationData(staged: boolean = false, bounds?: LatLngBounds) {
-        console.log("Starting update");
-
         setIsUpdating(true);
-
-        let flights: TelexConnection[] = [];
-        let skip = 0;
-        let total = 0;
 
         let apiBounds: Bounds = {
             north: 90,
@@ -71,58 +61,11 @@ const FlightsLayer = (props: FlightsProps) => {
             };
         }
 
-        do {
-            try {
-                const data = await Telex.fetchConnections(skip, 100, apiBounds);
-
-                total = data.total;
-                skip += data.count;
-                flights = flights.concat(data.results);
-
-                if (staged) {
-                    setData(flights);
-                }
-            } catch (err) {
-                console.error(err);
-                break;
-            }
-        }
-        while (total > skip);
+        const flights = await Telex.fetchAllConnections(apiBounds, staged ? setData : undefined);
 
         setIsUpdating(false);
         setData(flights);
         props.updateFlightData(flights);
-
-        console.log("Update finished");
-    }
-
-    async function getAirports(origin: string, destination: string) {
-        const airports: SelectedAirportType[] = [];
-
-        // Two individual try/catch: If one fails the other should still show
-        if (origin) {
-            try {
-                const originArpt = await Airport.get(origin);
-                airports.push({airport: originArpt, tag: 'origin'});
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        if (destination) {
-            try {
-                const destinationArpt = await Airport.get(destination);
-                airports.push({airport: destinationArpt, tag: 'destination'});
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        setSelectedAirports(airports);
-    }
-
-    function clearAirports() {
-        setSelectedAirports([]);
     }
 
     return (
@@ -139,7 +82,7 @@ const FlightsLayer = (props: FlightsProps) => {
                             html: `<img alt="${flight.flight}" src="${flight.flight === props.currentFlight ? props.planeIconHighlight : (props.searchedFlight === flight.flight) ? props.planeIconHighlight : props.planeIcon}"
                                         style="transform-origin: center; transform: rotate(${flight.heading}deg);"/>`
                         })}>
-                        <Popup onOpen={() => getAirports(flight.origin, flight.destination)} onClose={() => clearAirports()}>
+                        <Popup onOpen={() => setSelectedConnection(flight)} onClose={() => setSelectedConnection(null)}>
                             <h1>Flight {flight.flight}</h1>
                             {
                                 (flight.origin && flight.destination) ?
@@ -156,22 +99,8 @@ const FlightsLayer = (props: FlightsProps) => {
                 )
             }
             {
-                selectedAirports.map(airport =>
-                    <Marker
-                        key={airport.airport.icao + '-' + airport.tag}
-                        position={[airport.airport.lat, airport.airport.lon]}
-                        icon={L.divIcon({
-                            iconSize: [20, 17],
-                            iconAnchor: [10, 8.5],
-                            className: "mapIcon",
-                            html: `<img alt="${airport.airport.name}"
-                                        src="${(airport.tag === "destination") ? props.arrivalIcon : props.departureIcon}" />`
-                        })}>
-                        <Tooltip direction="top" permanent>
-                            <p>{airport.airport.icao} - {airport.airport.name}</p>
-                        </Tooltip>
-                    </Marker>
-                )
+                (selectedConnection !== null) ?
+                    <AirportsLayer connection={selectedConnection} departureIcon={props.departureIcon} arrivalIcon={props.arrivalIcon} /> : ""
             }
         </FeatureGroup>
     );
