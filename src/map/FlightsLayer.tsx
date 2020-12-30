@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {FeatureGroup, Marker, Popup, useMapEvents} from "react-leaflet";
-import L, {LatLngBounds} from "leaflet";
+import {FeatureGroup, useMapEvents} from "react-leaflet";
+import {LatLngBounds} from "leaflet";
 
 import {Telex, TelexConnection, Bounds} from "@flybywiresim/api-client";
 import AirportsLayer from "./AirportsLayer";
+import FlightMarker from "./FlightMarker";
 
 type FlightsProps = {
     updateFlightData: Function,
@@ -72,35 +73,22 @@ const FlightsLayer = (props: FlightsProps) => {
         <FeatureGroup>
             {
                 data.map((flight: TelexConnection) =>
-                    <Marker
+                    <FlightMarker
                         key={flight.id}
-                        position={[flight.location.y, flight.location.x]}
-                        icon={L.divIcon({
-                            iconSize: [20, 23],
-                            iconAnchor: [10, 6.5],
-                            className: 'mapIcon',
-                            html: `<img alt="${flight.flight}" src="${flight.flight === props.currentFlight ? props.planeIconHighlight : (props.searchedFlight === flight.flight) ? props.planeIconHighlight : props.planeIcon}"
-                                        style="transform-origin: center; transform: rotate(${flight.heading}deg);"/>`
-                        })}>
-                        <Popup onOpen={() => setSelectedConnection(flight)} onClose={() => setSelectedConnection(null)}>
-                            <h1>Flight {flight.flight}</h1>
-                            {
-                                (flight.origin && flight.destination) ?
-                                    <h2>{flight.origin}<svg xmlns="http://www.w3.org/2000/svg"
-                                        width="18" height="18" viewBox="0 0 24 24">
-                                        <path d="M16 10h4a2 2 0 0 1 0 4h-4l-4 7h-3l2 -7h-4l-2 2h-3l2 -4l-2 -4h3l2 2h4l-2 -7h3z" />
-                                    </svg> {flight.destination}</h2>
-                                    : ""
-                            }
-                            <p>Aircraft: {flight.aircraftType}</p>
-                            <p>Altitude: {flight.trueAltitude}ft</p>
-                        </Popup>
-                    </Marker>
+                        flight={flight}
+                        icon={props.planeIcon}
+                        highlightIcon={props.planeIconHighlight}
+                        isHighlighted={props.searchedFlight === flight.flight || props.currentFlight === flight.flight}
+                        onPopupOpen={() => setSelectedConnection(flight)}
+                        onPopupClose={() => setSelectedConnection(null)} />
                 )
             }
             {
                 (selectedConnection !== null) ?
-                    <AirportsLayer connection={selectedConnection} departureIcon={props.departureIcon} arrivalIcon={props.arrivalIcon} /> : ""
+                    <AirportsLayer
+                        connection={selectedConnection}
+                        departureIcon={props.departureIcon}
+                        arrivalIcon={props.arrivalIcon} /> : ""
             }
         </FeatureGroup>
     );
