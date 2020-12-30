@@ -17,11 +17,13 @@ import DepartureGray from './icons/arrival_gray.png';
 import PlaneCyan from './icons/plane_cyan.png';
 import PlaneBlue from './icons/plane_blue.png';
 import {LatLng} from "leaflet";
+import WeatherLayer from "./WeatherLayer";
 
 type MapProps = {
     disableSearch?: boolean,
     disableInfo?: boolean,
     disableFlights?: boolean,
+    disableWeather?: boolean,
     forceTileset?: string,
     currentFlight?: string,
     disableScroll?: boolean,
@@ -139,6 +141,10 @@ const Map = (props: MapProps) => {
             worldCopyJump={true}>
             <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} />
             {
+                (!props.disableWeather) ?
+                    <WeatherLayer /> : <></>
+            }
+            {
                 (!props.disableFlights) ?
                     <FlightsLayer
                         planeIcon={selectedTile.planeIcon}
@@ -156,14 +162,12 @@ const Map = (props: MapProps) => {
                 !props.disableInfo ?
                     <InfoPanel refreshInterval={props.refreshInterval || 10000}
                         tiles={availableTileSets} changeTiles={selectTile}/>
-                    :
-                    <></>
+                    : <></>
             }
             {
                 !props.disableSearch ?
                     <SearchBar flightData={flightData} updateSearchedFlight={updateSearchedFlight}/>
-                    :
-                    <></>
+                    : <></>
             }
         </MapContainer>
     );
