@@ -41,9 +41,9 @@ const InfoPanel = (props: InfoPanelProps) => {
     }
 
     return (
-        <div className="leaflet-bottom leaflet-left Panel InfoPanel">
-            <p className="PanelText">Total Flights: {totalFlights}</p>
-            <p className="PanelText">
+        <div className="leaflet-bottom leaflet-left panel info-panel">
+            <p>Total Flights: {totalFlights}</p>
+            <p>
                 {"Map Style: "}
                 <select defaultValue={retrieveActiveTileSet().value} onChange={(event) => props.changeTiles(event.target.value)}>
                     {

@@ -51,8 +51,8 @@ const SearchBar = (props: SearchBarProps) => {
     }
 
     return (
-        <div className="leaflet-top leaflet-left Panel SearchPanel">
-            <p className="PanelText">Search: </p>
+        <div className="leaflet-top leaflet-left panel search-panel">
+            <p>Search: </p>
             <input
                 type="text"
                 list="nameList"
