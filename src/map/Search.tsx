@@ -96,7 +96,16 @@ const SearchBar = (props: SearchBarProps) => {
                 </button>
                 <datalist id="autocomplete">
                     {
-                        props.connections.map(connection => !searchValue || connection.flight.startsWith(searchValue) ?
+                        props.connections.sort((a, b) => {
+                            if (a.flight < b.flight) {
+                                return -1;
+                            }
+                            if (a.flight > b.flight) {
+                                return 1;
+                            }
+
+                            return 0;
+                        }).map(connection => !searchValue || connection.flight.startsWith(searchValue) ?
                             <option key={connection.id} value={connection.flight} /> : <></>)
                     }
                 </datalist>
