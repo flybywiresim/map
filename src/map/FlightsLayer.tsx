@@ -43,7 +43,7 @@ const FlightsLayer = (props: FlightsProps) => {
 
     useEffect(() => {
         getLocationData(false, bounds);
-    }, [bounds]);
+    }, [bounds, props.hideOthers]);
 
     async function getLocationData(staged: boolean = false, bounds?: LatLngBounds) {
         setIsUpdating(true);
