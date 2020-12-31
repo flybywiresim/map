@@ -86,7 +86,7 @@ const Map = (props: MapProps) => {
     const [currentFlight, setCurrentFlight] = useState<string>(props.currentFlight || "");
     const [selectedTile, setSelectedTile] = useState<TileSet>(setAndFind(props.forceTileset || ""));
     const [flightData, setFlightData] = useState<TelexConnection[]>([]);
-    const [searchedFlight, setSearchedFlight] = useState<string>("");
+    const [searchedFlight, setSearchedFlight] = useState<TelexConnection>();
     const [keyMap, setKeyMap] = useState<number>(Math.random());
     const [weatherOpacity, setWeatherOpacity] = useState<number>(props.weatherOpacity || 0.2);
 
@@ -116,10 +116,6 @@ const Map = (props: MapProps) => {
 
     function updateFlightData(data: TelexConnection[]) {
         setFlightData(data);
-    }
-
-    function updateSearchedFlight(flightName: string) {
-        setSearchedFlight(flightName);
     }
 
     function selectTile(tile: string | null) {
@@ -169,7 +165,12 @@ const Map = (props: MapProps) => {
             }
             {
                 !props.disableSearch ?
-                    <SearchBar flightData={flightData} updateSearchedFlight={updateSearchedFlight}/>
+                    <SearchBar
+                        connections={flightData}
+                        onFound={(conn) => setSearchedFlight(conn)}
+                        onNotFound={() => setSearchedFlight(undefined)}
+                        onReset={() => setSearchedFlight(undefined)}
+                    />
                     : <></>
             }
             <ZoomControl position="bottomright" />

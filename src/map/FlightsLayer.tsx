@@ -13,7 +13,7 @@ type FlightsProps = {
     departureIcon: string,
     arrivalIcon: string,
     currentFlight: string,
-    searchedFlight: string,
+    searchedFlight?: TelexConnection,
     refreshInterval: number,
     hideOthers?: boolean,
 }
@@ -90,7 +90,7 @@ const FlightsLayer = (props: FlightsProps) => {
                         connection={connection}
                         icon={props.planeIcon}
                         highlightIcon={props.planeIconHighlight}
-                        isHighlighted={props.searchedFlight === connection.flight || props.currentFlight === connection.flight}
+                        isHighlighted={(props.searchedFlight && props.searchedFlight.flight === connection.flight) || props.currentFlight === connection.flight}
                         onPopupOpen={() => setSelectedConnection(connection)}
                         onPopupClose={() => setSelectedConnection(null)} />
                 )
