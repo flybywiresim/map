@@ -21,7 +21,33 @@ $fbw-cyan: #00C2CB;
   }
 
   .search-panel {
-    margin: 1rem 0 0 1rem
+    pointer-events: all !important;
+    margin: 1rem 0 0 1rem;
+    display: flex;
+    width: 20rem;
+
+    .search-term {
+      width: 100%;
+      border: 3px solid $fbw-cyan;
+      border-right: none;
+      padding: 0.5rem;
+      height: 1.3rem;
+      border-radius: 5px 0 0 5px;
+      outline: none;
+      color: #9DBFAF;
+    }
+
+    .search-term:focus {
+      color: $fbw-cyan;
+    }
+
+    .search-button {
+      width: 3rem;
+      border: 1px solid $fbw-cyan;
+      background: $fbw-cyan;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+    }
   }
 
   .info-panel {

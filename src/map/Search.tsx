@@ -51,15 +51,23 @@ const SearchBar = (props: SearchBarProps) => {
     }
 
     return (
-        <div className="leaflet-top leaflet-left panel search-panel">
-            <p>Search: </p>
+        <div className="leaflet-top leaflet-left search-panel">
             <input
                 type="text"
+                className="search-term"
                 list="nameList"
                 placeholder="Flight Number"
                 onChange={handleSearchChange}
-                onKeyPress={handleEnterPress}/>
-            <button onClick={handleSearch}>Search</button>
+                onKeyPress={handleEnterPress} />
+            <button type="submit" onClick={handleSearch} className="search-button">
+                <svg xmlns="http://www.w3.org/2000/svg" strokeWidth="3" stroke="#fff" fill="none"
+                    width="24" height="24" viewBox="0 0 24 24"
+                    strokeLinecap="round" strokeLinejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <circle cx="10" cy="10" r="7"/>
+                    <line x1="21" y1="21" x2="15" y2="15"/>
+                </svg>
+            </button>
             <datalist id="nameList">
                 {
                     nameList.map(name =>
