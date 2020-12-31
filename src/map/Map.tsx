@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {TileLayer, MapContainer} from "react-leaflet";
+import {TileLayer, MapContainer, ZoomControl} from "react-leaflet";
 
 import {TelexConnection} from "@flybywiresim/api-client";
 
@@ -138,7 +138,8 @@ const Map = (props: MapProps) => {
             center={props.center || [50, 8]}
             zoom={props.zoom || 5}
             scrollWheelZoom={!props.disableScroll}
-            worldCopyJump={true}>
+            worldCopyJump={true}
+            zoomControl={false} >
             <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} />
             {
                 (!props.disableWeather) ?
@@ -169,6 +170,7 @@ const Map = (props: MapProps) => {
                     <SearchBar flightData={flightData} updateSearchedFlight={updateSearchedFlight}/>
                     : <></>
             }
+            <ZoomControl position="bottomright" />
         </MapContainer>
     );
 };
