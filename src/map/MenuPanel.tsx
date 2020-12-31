@@ -119,6 +119,7 @@ const MenuPanel = (props: MenuPanelProps) => {
                 </datalist>
             </div>
             <div className="detail-area" hidden={!showDetails}>
+                <h1>Work in progress</h1>
                 <p>Total Flights: {totalFlights}</p>
                 {
                     (props.weatherOpacity !== undefined && props.onWeatherOpacityChange) ?
