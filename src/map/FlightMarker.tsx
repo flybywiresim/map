@@ -56,7 +56,14 @@ const FlightMarker = (props: FlightMarkerProps) => {
 
         try {
             if (typeof connection === "string") {
-                setConnection(await Telex.findConnection(connection));
+                const conns = await Telex.findConnections(connection);
+
+                if (conns.length !== 1 && conns[0].flight !== connection) {
+                    console.error('Current FLT NBR did not return 1 result');
+                    return;
+                }
+
+                setConnection(conns[0]);
             } else {
                 setConnection(await Telex.fetchConnection(connection.id));
             }

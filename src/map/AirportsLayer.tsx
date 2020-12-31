@@ -54,10 +54,12 @@ const AirportsLayer = (props: AirportsLayerProps) => {
         const airports: DisplayedAirport[] = [];
 
         for (const search of searches) {
-            try {
-                airports.push(await getAirport(search.icao, search.airportType));
-            } catch (e) {
-                console.error(e);
+            if (!!search.icao) {
+                try {
+                    airports.push(await getAirport(search.icao, search.airportType));
+                } catch (e) {
+                    console.error(e);
+                }
             }
         }
 

@@ -7,7 +7,7 @@ import AirportsLayer from "./AirportsLayer";
 import FlightMarker from "./FlightMarker";
 
 type FlightsProps = {
-    onConnectionsUpdate: (connections: TelexConnection[]) => void,
+    onConnectionsUpdate?: (connections: TelexConnection[]) => void,
     planeIcon: string,
     planeIconHighlight: string,
     departureIcon: string,
@@ -67,8 +67,14 @@ const FlightsLayer = (props: FlightsProps) => {
 
         try {
             if (props.hideOthers) {
-                const flt = await Telex.findConnection(props.currentFlight);
-                flights.push(flt);
+                const flt = await Telex.findConnections(props.currentFlight);
+
+                if (flt.length !== 1 && flt[0].flight !== props.currentFlight) {
+                    console.error("Current FLT NBR returns more than 1 result");
+                    return;
+                }
+
+                flights.push(flt[0]);
             } else {
                 flights = await Telex.fetchAllConnections(apiBounds, staged ? setData : undefined);
             }
@@ -78,7 +84,9 @@ const FlightsLayer = (props: FlightsProps) => {
 
         setIsUpdating(false);
         setData(flights);
-        props.onConnectionsUpdate(flights);
+        if (props.onConnectionsUpdate) {
+            props.onConnectionsUpdate(flights);
+        }
     }
 
     return (

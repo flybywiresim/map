@@ -15,7 +15,7 @@ import DepartureWhite from './icons/departure_white.png';
 import DepartureGray from './icons/arrival_gray.png';
 import PlaneCyan from './icons/plane_cyan.png';
 import PlaneBlue from './icons/plane_blue.png';
-import {LatLng} from "leaflet";
+import {ControlPosition, LatLng} from "leaflet";
 import WeatherLayer from "./WeatherLayer";
 
 type MapProps = {
@@ -30,6 +30,7 @@ type MapProps = {
     hideOthers?: boolean,
     center?: LatLng,
     zoom?: number,
+    zoomPosition?: ControlPosition,
 }
 
 export type TileSet = {
@@ -83,7 +84,6 @@ const Map = (props: MapProps) => {
 
     const [currentFlight, setCurrentFlight] = useState<string>(props.currentFlight || "");
     const [selectedTile, setSelectedTile] = useState<TileSet>(loadTileSet(props.forceTileset || ""));
-    const [connections, setConnections] = useState<TelexConnection[]>([]);
     const [searchedFlight, setSearchedFlight] = useState<TelexConnection>();
     const [keyMap, setKeyMap] = useState<number>(Math.random());
     const [weatherOpacity, setWeatherOpacity] = useState<number>(props.weatherOpacity || 0.2);
@@ -138,7 +138,6 @@ const Map = (props: MapProps) => {
                         planeIconHighlight={selectedTile.planeIconHighlight}
                         departureIcon={selectedTile.departureIcon}
                         arrivalIcon={selectedTile.arrivalIcon}
-                        onConnectionsUpdate={setConnections}
                         currentFlight={currentFlight}
                         searchedFlight={searchedFlight}
                         refreshInterval={props.refreshInterval || 10000}
@@ -148,7 +147,6 @@ const Map = (props: MapProps) => {
             {
                 !props.disableMenu ?
                     <MenuPanel
-                        connections={connections}
                         onFound={(conn) => setSearchedFlight(conn)}
                         onNotFound={() => setSearchedFlight(undefined)}
                         onReset={() => setSearchedFlight(undefined)}
@@ -165,7 +163,7 @@ const Map = (props: MapProps) => {
                     />
                     : <></>
             }
-            <ZoomControl position="bottomright" />
+            <ZoomControl position={props.zoomPosition || "bottomright"} />
         </MapContainer>
     );
 };

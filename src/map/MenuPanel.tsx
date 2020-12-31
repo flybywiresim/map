@@ -5,7 +5,6 @@ import {LatLng} from "leaflet";
 import {TileSet} from "./Map";
 
 type MenuPanelProps = {
-    connections: TelexConnection[],
     onFound?: (conn: TelexConnection) => void;
     onNotFound?: () => void;
     onReset?: () => void;
@@ -27,6 +26,7 @@ const MenuPanel = (props: MenuPanelProps) => {
     const [showDetails, setShowDetails] = useState<boolean>(false);
     const [totalFlights, setTotalFlights] = useState<number>(NaN);
     const [searchValue, setSearchValue] = useState<string>("");
+    const [autocompleteList, setAutocompleteList] = useState<TelexConnection[]>([]);
 
     // Update total flights
     useEffect(() => {
@@ -43,7 +43,7 @@ const MenuPanel = (props: MenuPanelProps) => {
         return () => clearInterval(interval);
     });
 
-    async function handleSearch() {
+    async function handleSearch(flyTo?: boolean) {
         if (!searchValue) {
             if (props.onReset) {
                 props.onReset();
@@ -52,13 +52,25 @@ const MenuPanel = (props: MenuPanelProps) => {
         }
 
         try {
-            const res = await Telex.findConnection(searchValue);
+            const res = await Telex.findConnections(searchValue);
 
-            if (props.onFound) {
-                props.onFound(res);
+            if (res.length === 0) {
+                if (props.onNotFound) {
+                    props.onNotFound();
+                }
+            } else if (res.length >= 1) {
+                setAutocompleteList(res);
+
+                if (res[0].flight === searchValue) {
+                    if (props.onFound) {
+                        props.onFound(res[0]);
+                    }
+
+                    if (flyTo === undefined || flyTo) {
+                        mapRef.flyTo(new LatLng(res[0].location.y, res[0].location.x), 7);
+                    }
+                }
             }
-
-            mapRef.flyTo(new LatLng(res.location.y, res.location.x), 7);
         } catch (e) {
             console.error(e);
 
@@ -88,11 +100,14 @@ const MenuPanel = (props: MenuPanelProps) => {
                     className="search-term"
                     list="autocomplete"
                     placeholder="Flight Number"
-                    onChange={event => setSearchValue(event.target.value.toString())}
+                    onChange={event => {
+                        setSearchValue(event.target.value.toString());
+                        handleSearch(false);
+                    }}
                     onKeyPress={event => event.key === "Enter" ? handleSearch() : {}}
                     onFocus={(event) => event.target.select()}
-                    onBlur={handleSearch}/>
-                <button type="submit" onClick={handleSearch} className="search-button">
+                    onBlur={() => handleSearch()}/>
+                <button type="submit" onClick={() => handleSearch()} className="search-button">
                     <svg
                         xmlns="http://www.w3.org/2000/svg" strokeWidth="3" stroke="#fff" fill="none"
                         width="24" height="24" viewBox="0 0 24 24"
@@ -104,7 +119,7 @@ const MenuPanel = (props: MenuPanelProps) => {
                 </button>
                 <datalist id="autocomplete">
                     {
-                        props.connections.sort((a, b) => {
+                        autocompleteList.sort((a, b) => {
                             if (a.flight < b.flight) {
                                 return -1;
                             }
