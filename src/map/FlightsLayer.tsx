@@ -75,6 +75,7 @@ const FlightsLayer = (props: FlightsProps) => {
                 }
 
                 flights.push(flt[0]);
+                map.flyTo({lat: flt[0].location.y, lng: flt[0].location.x});
             } else {
                 flights = await Telex.fetchAllConnections(apiBounds, staged ? setData : undefined);
             }
