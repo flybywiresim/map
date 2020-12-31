@@ -24,6 +24,7 @@ type MapProps = {
     disableInfo?: boolean,
     disableFlights?: boolean,
     disableWeather?: boolean,
+    weatherOpacity?: number,
     forceTileset?: string,
     currentFlight?: string,
     disableScroll?: boolean,
@@ -87,6 +88,7 @@ const Map = (props: MapProps) => {
     const [flightData, setFlightData] = useState<TelexConnection[]>([]);
     const [searchedFlight, setSearchedFlight] = useState<string>("");
     const [keyMap, setKeyMap] = useState<number>(Math.random());
+    const [weatherOpacity, setWeatherOpacity] = useState<number>(props.weatherOpacity || 0.2);
 
     useEffect(() => {
         setKeyMap(Math.random());
@@ -133,7 +135,7 @@ const Map = (props: MapProps) => {
 
     return (
         <MapContainer
-            id="mapid"
+            id="live-map"
             key={keyMap}
             center={props.center || [50, 8]}
             zoom={props.zoom || 5}
@@ -143,7 +145,7 @@ const Map = (props: MapProps) => {
             <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} />
             {
                 (!props.disableWeather) ?
-                    <WeatherLayer /> : <></>
+                    <WeatherLayer opacity={weatherOpacity} /> : <></>
             }
             {
                 (!props.disableFlights) ?

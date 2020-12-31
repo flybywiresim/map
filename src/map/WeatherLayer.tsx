@@ -33,7 +33,7 @@ const WeatherLayer = (props: WeatherLayerProps) => {
                     <TileLayer
                         url={`https://tilecache.rainviewer.com/v2/radar/${timestamp}/256/{z}/{x}/{y}/2/1_1.png`}
                         tileSize={256}
-                        opacity={props.opacity || 0.2} /> : <></>
+                        opacity={props.opacity} /> : <></>
             }
         </>
     );
