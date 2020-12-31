@@ -7,7 +7,7 @@ import AirportsLayer from "./AirportsLayer";
 import FlightMarker from "./FlightMarker";
 
 type FlightsProps = {
-    updateFlightData: Function,
+    onConnectionsUpdate: (connections: TelexConnection[]) => void,
     planeIcon: string,
     planeIconHighlight: string,
     departureIcon: string,
@@ -39,7 +39,7 @@ const FlightsLayer = (props: FlightsProps) => {
             const interval = setInterval(() => getLocationData(false, map.getBounds()), props.refreshInterval);
             return () => clearInterval(interval);
         }
-    }, [props.refreshInterval]);
+    }, [props.refreshInterval, props.hideOthers]);
 
     useEffect(() => {
         getLocationData(false, bounds);
@@ -78,7 +78,7 @@ const FlightsLayer = (props: FlightsProps) => {
 
         setIsUpdating(false);
         setData(flights);
-        props.updateFlightData(flights);
+        props.onConnectionsUpdate(flights);
     }
 
     return (

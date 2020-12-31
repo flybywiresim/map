@@ -4,16 +4,24 @@ import {useMap} from "react-leaflet";
 import {LatLng} from "leaflet";
 import {TileSet} from "./Map";
 
-type SearchBarProps = {
+type MenuPanelProps = {
     connections: TelexConnection[],
     onFound?: (conn: TelexConnection) => void;
     onNotFound?: () => void;
     onReset?: () => void;
+    weatherOpacity?: number;
+    onWeatherOpacityChange?: (opacity: number) => void;
+    activeTileSet?: TileSet;
     availableTileSets?: TileSet[];
-    onTileSetSelect?: (key: string) => void;
+    onTileSetChange?: (tileSet: TileSet) => void;
+    refreshInterval?: number;
+    currentFlight?: string;
+    onCurrentFlightChange?: (flight: string) => void;
+    showOthers?: boolean;
+    onShowOthersChange?: (show: boolean) => void;
 }
 
-const SearchBar = (props: SearchBarProps) => {
+const MenuPanel = (props: MenuPanelProps) => {
     const mapRef = useMap();
 
     const [showDetails, setShowDetails] = useState<boolean>(false);
@@ -30,7 +38,7 @@ const SearchBar = (props: SearchBarProps) => {
             }
         };
 
-        const interval = setInterval(() => getTotalFlights(), 15000);
+        const interval = setInterval(() => getTotalFlights(), props.refreshInterval || 10000);
         getTotalFlights();
         return () => clearInterval(interval);
     });
@@ -83,7 +91,7 @@ const SearchBar = (props: SearchBarProps) => {
                     onChange={event => setSearchValue(event.target.value.toString())}
                     onKeyPress={event => event.key === "Enter" ? handleSearch() : {}}
                     onFocus={(event) => event.target.select()}
-                    onBlur={handleSearch} />
+                    onBlur={handleSearch}/>
                 <button type="submit" onClick={handleSearch} className="search-button">
                     <svg
                         xmlns="http://www.w3.org/2000/svg" strokeWidth="3" stroke="#fff" fill="none"
@@ -106,15 +114,65 @@ const SearchBar = (props: SearchBarProps) => {
 
                             return 0;
                         }).map(connection => !searchValue || connection.flight.startsWith(searchValue) ?
-                            <option key={connection.id} value={connection.flight} /> : <></>)
+                            <option key={connection.id} value={connection.flight}/> : <></>)
                     }
                 </datalist>
             </div>
             <div className="detail-area" hidden={!showDetails}>
                 <p>Total Flights: {totalFlights}</p>
+                {
+                    (props.weatherOpacity !== undefined && props.onWeatherOpacityChange) ?
+                        <>
+                            <p>Weather opacity</p>
+                            <input
+                                type="range"
+                                value={100 * props.weatherOpacity}
+                                min={0}
+                                max={100}
+                                onChange={event => props.onWeatherOpacityChange && props.onWeatherOpacityChange(Number(event.target.value) / 100)}
+                            />
+                        </> : <></>
+                }
+                {
+                    (props.activeTileSet && props.availableTileSets && props.onTileSetChange) ?
+                        <select
+                            defaultValue={props.activeTileSet.value}
+                            onChange={(event) =>
+                                props.onTileSetChange && props.availableTileSets &&
+                                props.onTileSetChange(
+                                    props.availableTileSets.find(x => x.value === event.target.value) || props.availableTileSets[0])}>
+                            {
+                                props.availableTileSets.map((tiles: TileSet) =>
+                                    <option key={tiles.id} value={tiles.value}>{tiles.name}</option>
+                                )
+                            }
+                        </select> : <></>
+                }
+                {
+                    props.onCurrentFlightChange ?
+                        <input
+                            type="text"
+                            placeholder="Current Flight Number"
+                            onChange={event => props.onCurrentFlightChange ? props.onCurrentFlightChange(event.target.value.toString()) : {}}
+                            onBlur={event => props.onCurrentFlightChange ? props.onCurrentFlightChange(event.target.value.toString()) : {}}
+                            onFocus={(event) => event.target.select()}
+                            value={props.currentFlight}
+                        /> : <></>
+                }
+                {
+                    props.onShowOthersChange ?
+                        <>
+                            <p>Show others</p>
+                            <input
+                                type="checkbox"
+                                checked={props.showOthers}
+                                onChange={event => props.onShowOthersChange ? props.onShowOthersChange(event.target.checked) : {}}
+                            />
+                        </> : <></>
+                }
             </div>
         </div>
     );
 };
 
-export default SearchBar;
+export default MenuPanel;

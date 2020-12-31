@@ -4,8 +4,7 @@ import {TileLayer, MapContainer, ZoomControl} from "react-leaflet";
 import {TelexConnection} from "@flybywiresim/api-client";
 
 import FlightsLayer from './FlightsLayer';
-import SearchBar from './Search';
-import InfoPanel from './InfoPanel';
+import MenuPanel from './MenuPanel';
 
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
@@ -20,8 +19,7 @@ import {LatLng} from "leaflet";
 import WeatherLayer from "./WeatherLayer";
 
 type MapProps = {
-    disableSearch?: boolean,
-    disableInfo?: boolean,
+    disableMenu?: boolean,
     disableFlights?: boolean,
     disableWeather?: boolean,
     weatherOpacity?: number,
@@ -84,24 +82,24 @@ const Map = (props: MapProps) => {
     ];
 
     const [currentFlight, setCurrentFlight] = useState<string>(props.currentFlight || "");
-    const [selectedTile, setSelectedTile] = useState<TileSet>(setAndFind(props.forceTileset || ""));
-    const [flightData, setFlightData] = useState<TelexConnection[]>([]);
+    const [selectedTile, setSelectedTile] = useState<TileSet>(loadTileSet(props.forceTileset || ""));
+    const [connections, setConnections] = useState<TelexConnection[]>([]);
     const [searchedFlight, setSearchedFlight] = useState<TelexConnection>();
     const [keyMap, setKeyMap] = useState<number>(Math.random());
     const [weatherOpacity, setWeatherOpacity] = useState<number>(props.weatherOpacity || 0.2);
+    const [showOthers, setShowOthers] = useState<boolean>(!props.hideOthers);
 
+    // Force map reload on tile set change
     useEffect(() => {
         setKeyMap(Math.random());
     }, [selectedTile]);
 
-    function setAndFind(key: string): TileSet {
-        if (key) {
-            window.localStorage.setItem("PreferredTileset", key);
+    function loadTileSet(override?: string): TileSet {
+        if (override) {
+            window.localStorage.setItem("PreferredTileset", override);
+            return loadTileSet();
         }
-        return findPreferredTile();
-    }
 
-    function findPreferredTile(): TileSet {
         try {
             const storedTiles = window.localStorage.getItem("PreferredTileset");
             if (!storedTiles) {
@@ -114,19 +112,9 @@ const Map = (props: MapProps) => {
         }
     }
 
-    function updateFlightData(data: TelexConnection[]) {
-        setFlightData(data);
-    }
-
-    function selectTile(tile: string | null) {
-        if (!tile) {
-            return availableTileSets[0];
-        }
-
-        const newTiles = availableTileSets.find(x => x.value === tile) || availableTileSets[0];
-
-        setSelectedTile(newTiles);
-        window.localStorage.setItem("PreferredTileset", newTiles.value);
+    function setAndStoreSelectedTile(tiles: TileSet) {
+        setSelectedTile(tiles);
+        window.localStorage.setItem("PreferredTileset", tiles.value);
     }
 
     return (
@@ -150,26 +138,30 @@ const Map = (props: MapProps) => {
                         planeIconHighlight={selectedTile.planeIconHighlight}
                         departureIcon={selectedTile.departureIcon}
                         arrivalIcon={selectedTile.arrivalIcon}
-                        updateFlightData={updateFlightData}
+                        onConnectionsUpdate={setConnections}
                         currentFlight={currentFlight}
                         searchedFlight={searchedFlight}
                         refreshInterval={props.refreshInterval || 10000}
-                        hideOthers={props.hideOthers}
+                        hideOthers={!showOthers}
                     /> : <></>
             }
             {
-                !props.disableInfo ?
-                    <InfoPanel refreshInterval={props.refreshInterval || 10000}
-                        tiles={availableTileSets} changeTiles={selectTile}/>
-                    : <></>
-            }
-            {
-                !props.disableSearch ?
-                    <SearchBar
-                        connections={flightData}
+                !props.disableMenu ?
+                    <MenuPanel
+                        connections={connections}
                         onFound={(conn) => setSearchedFlight(conn)}
                         onNotFound={() => setSearchedFlight(undefined)}
                         onReset={() => setSearchedFlight(undefined)}
+                        weatherOpacity={weatherOpacity}
+                        onWeatherOpacityChange={setWeatherOpacity}
+                        activeTileSet={selectedTile}
+                        availableTileSets={availableTileSets}
+                        onTileSetChange={setAndStoreSelectedTile}
+                        refreshInterval={props.refreshInterval || 10000}
+                        currentFlight={currentFlight}
+                        onCurrentFlightChange={setCurrentFlight}
+                        showOthers={showOthers}
+                        onShowOthersChange={setShowOthers}
                     />
                     : <></>
             }
