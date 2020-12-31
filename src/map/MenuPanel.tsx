@@ -81,7 +81,7 @@ const MenuPanel = (props: MenuPanelProps) => {
     }
 
     return (
-        <div className="leaflet-top leaflet-left search-panel">
+        <div className="leaflet-top leaflet-left menu-panel">
             <div className="search-bar">
                 <button
                     className="menu-button"
