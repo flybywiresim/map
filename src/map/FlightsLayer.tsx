@@ -65,11 +65,15 @@ const FlightsLayer = (props: FlightsProps) => {
 
         let flights: TelexConnection[] = [];
 
-        if (props.hideOthers) {
-            const flt = await Telex.findConnection(props.currentFlight);
-            flights.push(flt);
-        } else {
-            flights = await Telex.fetchAllConnections(apiBounds, staged ? setData : undefined);
+        try {
+            if (props.hideOthers) {
+                const flt = await Telex.findConnection(props.currentFlight);
+                flights.push(flt);
+            } else {
+                flights = await Telex.fetchAllConnections(apiBounds, staged ? setData : undefined);
+            }
+        } catch (e) {
+            console.error(e);
         }
 
         setIsUpdating(false);
