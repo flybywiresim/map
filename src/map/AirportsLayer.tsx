@@ -82,14 +82,12 @@ const AirportsLayer = (props: AirportsLayerProps) => {
                     <Marker
                         key={arptToShow.airport.icao + '-' + arptToShow.airportType}
                         position={[arptToShow.airport.lat, arptToShow.airport.lon]}
-                        icon={L.divIcon({
-                            iconSize: [20, 17],
-                            iconAnchor: [10, 8.5],
-                            className: "mapIcon",
-                            html: `<img alt="${arptToShow.airport.name}"
-                                        src="${(arptToShow.airportType === AirportType.Arrival) ? (props.arrivalIcon || ArrivalWhite) : (props.departureIcon || DepartureWhite)}" />`
+                        icon={L.icon({
+                            iconSize: [26, 26],
+                            iconAnchor: [13, 13],
+                            iconUrl: (arptToShow.airportType === AirportType.Arrival) ? (props.arrivalIcon || ArrivalWhite) : (props.departureIcon || DepartureWhite)
                         })}>
-                        <Tooltip direction="top" permanent>
+                        <Tooltip className="airport-tooltip" direction="top" permanent>
                             <p>{arptToShow.airport.icao} - {arptToShow.airport.name}</p>
                         </Tooltip>
                     </Marker>

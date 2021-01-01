@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans&display=swap');
-
 $fbw-cyan: #00C2CB;
+$tooltip: rgba(255, 255, 255, 0.6);
+$popup: $tooltip;
 
 #live-map {
   height: 100vh;
@@ -51,8 +51,17 @@ $fbw-cyan: #00C2CB;
   }
 
   .leaflet-popup-content-wrapper,
-  .leaflet-popup-tip,
-  .leaflet-tooltip-top {
-    background-color: rgba(255,255,255,0.6);
+  .leaflet-popup-tip {
+    background-color: $popup;
+  }
+
+  .leaflet-tooltip-top:before {
+    border-top-color: $tooltip;
+  }
+
+  .airport-tooltip {
+    background-color: $tooltip;
+    border: none;
+    margin-top: -20px;
   }
 }
