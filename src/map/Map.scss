@@ -59,6 +59,25 @@ $popup: $tooltip;
     .detail-area {
       border-top: 1px solid #b5b5b5;
       padding: 0.5rem;
+
+      .tileset-select {
+        margin: 0.5rem;
+
+        input[type=radio] {
+          position: absolute;
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        input[type=radio] + img {
+          cursor: pointer;
+        }
+
+        input[type=radio]:checked + img {
+          outline: 3px solid $fbw-blue;
+        }
+      }
     }
   }
 

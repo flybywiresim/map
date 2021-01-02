@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, FormEvent} from "react";
 import {Telex, TelexConnection} from "@flybywiresim/api-client";
 import {useMap} from "react-leaflet";
 import L, {LatLng} from "leaflet";
@@ -102,6 +102,14 @@ const MenuPanel = (props: MenuPanelProps) => {
         }
     }
 
+    function handleTileSelect(event: FormEvent<HTMLInputElement>) {
+        if (props.onTileSetChange && props.availableTileSets) {
+            props.onTileSetChange(
+                // @ts-ignore
+                props.availableTileSets.find(x => x.value === event.target.value) || props.availableTileSets[0]);
+        }
+    }
+
     return (
         <div id="menu-panel" className="leaflet-top leaflet-left">
             <div className="search-bar">
@@ -170,18 +178,20 @@ const MenuPanel = (props: MenuPanelProps) => {
                 }
                 {
                     (props.activeTileSet && props.availableTileSets && props.onTileSetChange) ?
-                        <select
-                            defaultValue={props.activeTileSet.value}
-                            onChange={(event) =>
-                                props.onTileSetChange && props.availableTileSets &&
-                                props.onTileSetChange(
-                                    props.availableTileSets.find(x => x.value === event.target.value) || props.availableTileSets[0])}>
+                        <div onChange={handleTileSelect}>
                             {
-                                props.availableTileSets.map((tiles: TileSet) =>
-                                    <option key={tiles.id} value={tiles.value}>{tiles.name}</option>
+                                props.availableTileSets.map(tileSet =>
+                                    <label className="tileset-select" key={tileSet.value} >
+                                        <input
+                                            type="radio"
+                                            name="tileset"
+                                            value={tileSet.value}
+                                            defaultChecked={tileSet.value === props.activeTileSet?.value} />
+                                        <img src={tileSet.previewImageUrl} alt={tileSet.name} width="60rem" />
+                                    </label>
                                 )
                             }
-                        </select> : <></>
+                        </div> : <></>
                 }
                 {
                     props.onCurrentFlightChange ?
