@@ -127,4 +127,50 @@ $menu-border-thickness: 0;
       border-top-color: $tooltip;
     }
   }
+
+  .leaflet-control {
+    cursor: pointer;
+  }
+
+  a.polyline-measure-controlOnBgColor,
+  a.polyline-measure-controlOnBgColor:hover {
+    background-color: #8f8;
+  }
+
+  .polyline-measure-unicode-icon {
+    font-size: 19px;
+    font-weight: bold;
+  }
+
+  a.polyline-measure-clearControl:active {
+    background-color: #f88;
+  }
+
+  .polyline-measure-tooltip {
+    line-height: 120%;
+    padding: 0.5rem;
+    background-color: $tooltip;
+    border-radius: 3px;
+    margin: 0;
+    width: auto !important;
+    height: auto !important;
+    white-space: nowrap;
+    text-align: right;
+    z-index: 9999 !important;
+  }
+
+  .polyline-measure-tooltip-end {
+    background-color: #b7f4f5;
+  }
+
+  .polyline-measure-tooltip-total {
+    color: #006;
+    font-weight: bold;
+  }
+
+  .polyline-measure-tooltip-difference {
+    color: #006600;
+    font-style: italic;
+  }
+
 }

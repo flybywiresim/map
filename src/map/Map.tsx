@@ -20,6 +20,7 @@ import PlaneBlue from './res/icons/plane_blue.png';
 import CartoDarkPreview from './res/previews/carto-dark.png';
 import CartoLightPreview from './res/previews/carto-light.png';
 import OsmPreview from './res/previews/osm.png';
+import { MeasureControl } from "./MeasureControl";
 
 type MapProps = {
     disableMenu?: boolean,
@@ -172,6 +173,15 @@ const Map = (props: MapProps) => {
             }
             <ZoomControl position={props.zoomPosition || "bottomright"} />
             <NmScale />
+            <MeasureControl
+                position={props.zoomPosition || "bottomright"}
+                unit={"nauticalmiles"}
+                showBearings={true}
+                showUnitControl={true}
+                showClearControl={true}
+                tempLine={{color: '#00C2CB', weight: 2}}
+                fixedLine={{color: '#00C2CB', weight: 2}}
+            />
         </MapContainer>
     );
 };
