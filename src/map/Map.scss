@@ -6,7 +6,7 @@ $popup: $tooltip;
   height: 100vh;
   width: 100vw;
 
-  .menu-panel {
+  #menu-panel {
     pointer-events: all !important;
     margin: 1rem;
     width: 20rem;
@@ -22,6 +22,10 @@ $popup: $tooltip;
         border: none;
         cursor: pointer;
         background: #fff;
+
+        &:focus {
+          outline: 0;
+        }
       }
 
       .search-term {
@@ -30,10 +34,10 @@ $popup: $tooltip;
         padding: 0.5rem;
         height: 1.3rem;
         color: #9DBFAF;
-      }
 
-      .search-term:focus {
-        color: $fbw-cyan;
+        &:focus {
+          outline: 0;
+        }
       }
 
       .search-button {
@@ -41,6 +45,10 @@ $popup: $tooltip;
         border: none;
         background: $fbw-cyan;
         cursor: pointer;
+
+        &:focus {
+          outline: 0;
+        }
       }
     }
 
@@ -55,13 +63,13 @@ $popup: $tooltip;
     background-color: $popup;
   }
 
-  .leaflet-tooltip-top:before {
-    border-top-color: $tooltip;
-  }
-
   .airport-tooltip {
     background-color: $tooltip;
     border: none;
     margin-top: -20px;
+
+    &:before {
+      border-top-color: $tooltip;
+    }
   }
 }

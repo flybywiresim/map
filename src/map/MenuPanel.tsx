@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {Telex, TelexConnection} from "@flybywiresim/api-client";
 import {useMap} from "react-leaflet";
-import {LatLng} from "leaflet";
+import L, {LatLng} from "leaflet";
 import {TileSet} from "./Map";
 
 type MenuPanelProps = {
@@ -42,6 +42,14 @@ const MenuPanel = (props: MenuPanelProps) => {
         getTotalFlights();
         return () => clearInterval(interval);
     });
+
+    // Prevent click through
+    useEffect(() => {
+        const menu = L.DomUtil.get('menu-panel');
+        if (menu) {
+            L.DomEvent.disableClickPropagation(menu);
+        }
+    }, [mapRef]);
 
     async function handleSearch(flyTo?: boolean) {
         if (!searchValue) {
@@ -84,7 +92,7 @@ const MenuPanel = (props: MenuPanelProps) => {
     }
 
     return (
-        <div className="leaflet-top leaflet-left menu-panel">
+        <div id="menu-panel" className="leaflet-top leaflet-left">
             <div className="search-bar">
                 <button
                     className="menu-button"
