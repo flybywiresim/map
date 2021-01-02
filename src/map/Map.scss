@@ -1,4 +1,7 @@
-$fbw-cyan: #00C2CB;
+$fbw-blue: #00C2CB;
+$fbw-dark-blue: #6399AE;
+$fbw-grey: #545454;
+
 $tooltip: rgba(255, 255, 255, 0.6);
 $popup: $tooltip;
 
@@ -11,7 +14,7 @@ $popup: $tooltip;
     margin: 1rem;
     width: 20rem;
     border-radius: 5px;
-    border: 3px solid $fbw-cyan;
+    border: 3px solid $fbw-blue;
     background: #fff;
 
     .search-bar {
@@ -33,7 +36,7 @@ $popup: $tooltip;
         border: none;
         padding: 0.5rem;
         height: 1.3rem;
-        color: #9DBFAF;
+        color: $fbw-dark-blue;
 
         &:focus {
           outline: 0;
@@ -43,7 +46,7 @@ $popup: $tooltip;
       .search-button {
         width: 3rem;
         border: none;
-        background: $fbw-cyan;
+        background: $fbw-blue;
         cursor: pointer;
 
         &:focus {

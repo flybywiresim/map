@@ -96,6 +96,7 @@ const MenuPanel = (props: MenuPanelProps) => {
             <div className="search-bar">
                 <button
                     className="menu-button"
+                    aria-label="Menu"
                     onClick={() => setShowDetails(!showDetails)}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg" strokeWidth="2" stroke="#b5b5b5" fill="none"
@@ -108,6 +109,7 @@ const MenuPanel = (props: MenuPanelProps) => {
                 </button>
                 <input
                     type="text"
+                    aria-label="Search Field"
                     className="search-term"
                     list="autocomplete"
                     placeholder="Flight Number"
@@ -118,7 +120,11 @@ const MenuPanel = (props: MenuPanelProps) => {
                     onKeyPress={event => event.key === "Enter" ? handleSearch() : {}}
                     onFocus={(event) => event.target.select()}
                     onBlur={() => handleSearch()}/>
-                <button type="submit" onClick={() => handleSearch()} className="search-button">
+                <button
+                    type="submit"
+                    aria-label="Search"
+                    onClick={() => handleSearch()}
+                    className="search-button">
                     <svg
                         xmlns="http://www.w3.org/2000/svg" strokeWidth="3" stroke="#fff" fill="none"
                         width="24" height="24" viewBox="0 0 24 24"
