@@ -87,8 +87,6 @@ const MenuPanel = (props: MenuPanelProps) => {
 
                     if (flyTo === undefined || flyTo || res.length === 1) {
                         const zoom = Math.max(10, 15 - res[0].trueAltitude * 5 / 12000);
-                        console.log(zoom);
-
                         mapRef.flyTo(new LatLng(res[0].location.y, res[0].location.x), zoom);
                     }
                 }
@@ -160,9 +158,8 @@ const MenuPanel = (props: MenuPanelProps) => {
                     }
                 </datalist>
             </div>
+            <div className="divider" hidden={!showDetails} />
             <div className="detail-area" hidden={!showDetails}>
-                <h1>Work in progress</h1>
-                <p>Total Flights: {totalFlights}</p>
                 {
                     (props.weatherOpacity !== undefined && props.onWeatherOpacityChange) ?
                         <>
@@ -215,6 +212,7 @@ const MenuPanel = (props: MenuPanelProps) => {
                             />
                         </> : <></>
                 }
+                <p className="active-flights">Active Flights<br/><span>{totalFlights}</span></p>
             </div>
         </div>
     );

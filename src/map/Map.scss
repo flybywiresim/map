@@ -1,9 +1,13 @@
 $fbw-blue: #00C2CB;
 $fbw-dark-blue: #6399AE;
 $fbw-grey: #545454;
+$menu-background: #FFF;
 
 $tooltip: rgba(255, 255, 255, 0.6);
 $popup: $tooltip;
+
+$menu-border-radius: 2px;
+$menu-border-thickness: 0;
 
 #live-map {
   height: 100vh;
@@ -13,18 +17,26 @@ $popup: $tooltip;
     pointer-events: all !important;
     margin: 1rem;
     width: 20rem;
-    border-radius: 5px;
-    border: 3px solid $fbw-blue;
-    background: #fff;
+    border-radius: $menu-border-radius;
+    border: $menu-border-thickness solid $fbw-blue;
+    background: $menu-background;
+
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+
+    &:hover {
+      box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    }
 
     .search-bar {
       display: flex;
 
       .menu-button {
+        border-radius: $menu-border-radius;
         width: 3rem;
         border: none;
         cursor: pointer;
-        background: #fff;
+        background: $menu-background;
 
         &:focus {
           outline: 0;
@@ -38,6 +50,7 @@ $popup: $tooltip;
         height: 1.3rem;
         color: $fbw-dark-blue;
         font-size: medium;
+        background: $menu-background;
 
         &:focus {
           outline: 0;
@@ -56,8 +69,12 @@ $popup: $tooltip;
       }
     }
 
-    .detail-area {
+    .divider {
+      margin-left: 2.5rem;
       border-top: 1px solid #b5b5b5;
+    }
+
+    .detail-area {
       padding: 0.5rem;
 
       .tileset-select {
@@ -77,6 +94,17 @@ $popup: $tooltip;
         input[type=radio]:checked + img {
           outline: 3px solid $fbw-blue;
         }
+      }
+
+      .active-flights {
+        margin: 0;
+        font-size: small;
+        text-align: end;
+        line-height: 150%;
+
+         span {
+           font-size: x-large;
+         }
       }
     }
   }
