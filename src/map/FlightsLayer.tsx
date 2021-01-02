@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {FeatureGroup, useMapEvents} from "react-leaflet";
 import {LatLngBounds} from "leaflet";
 
 import {Telex, TelexConnection, Bounds} from "@flybywiresim/api-client";
 import AirportsLayer from "./AirportsLayer";
 import FlightMarker from "./FlightMarker";
+import useInterval from "./hooks/useInterval";
 
 type FlightsProps = {
     onConnectionsUpdate?: (connections: TelexConnection[]) => void,
@@ -34,16 +35,10 @@ const FlightsLayer = (props: FlightsProps) => {
     const [bounds, setBounds] = useState<LatLngBounds>(map.getBounds());
     const [selectedConnection, setSelectedConnection] = useState<TelexConnection | null>(null);
 
-    useEffect(() => {
-        if (props.refreshInterval && props.refreshInterval > 0) {
-            const interval = setInterval(() => getLocationData(false, map.getBounds()), props.refreshInterval);
-            return () => clearInterval(interval);
-        }
-    }, [props.refreshInterval, props.hideOthers]);
-
-    useEffect(() => {
-        getLocationData(false, bounds);
-    }, [bounds, props.hideOthers]);
+    useInterval(async () => {
+        await getLocationData(false, map.getBounds());
+    }, props.refreshInterval || 10000,
+    { runOnStart: true, additionalDeps: [props.hideOthers, bounds]});
 
     async function getLocationData(staged: boolean = false, bounds?: LatLngBounds) {
         setIsUpdating(true);

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState } from "react";
 import {TileLayer, MapContainer, ZoomControl} from "react-leaflet";
 import { NmScale } from '@marfle/react-leaflet-nmscale';
 import {ControlPosition, LatLng} from "leaflet";
@@ -21,6 +21,7 @@ import CartoDarkPreview from './res/previews/carto-dark.png';
 import CartoLightPreview from './res/previews/carto-light.png';
 import OsmPreview from './res/previews/osm.png';
 import { MeasureControl } from "./MeasureControl";
+import useLocalStorage from "./hooks/useLocalStorage";
 
 type MapProps = {
     disableMenu?: boolean,
@@ -91,33 +92,15 @@ const Map = (props: MapProps) => {
     ];
 
     const [currentFlight, setCurrentFlight] = useState<string>(props.currentFlight || "");
-    const [selectedTile, setSelectedTile] = useState<TileSet>(loadTileSet(props.forceTileset || ""));
+    const [selectedTile, setSelectedTile] = useLocalStorage<TileSet>(
+        "tileSet",
+        availableTileSets[0],
+        {
+            valueOverride: !!props.forceTileset && (availableTileSets.find(x => x.value === props.forceTileset)),
+        });
     const [searchedFlight, setSearchedFlight] = useState<TelexConnection>();
     const [weatherOpacity, setWeatherOpacity] = useState<number>(props.weatherOpacity || 0.2);
     const [showOthers, setShowOthers] = useState<boolean>(!props.hideOthers);
-
-    function loadTileSet(override?: string): TileSet {
-        if (override) {
-            window.localStorage.setItem("PreferredTileset", override);
-            return loadTileSet();
-        }
-
-        try {
-            const storedTiles = window.localStorage.getItem("PreferredTileset");
-            if (!storedTiles) {
-                return availableTileSets[0];
-            }
-
-            return availableTileSets.find(x => x.value === storedTiles) || availableTileSets[0];
-        } catch {
-            return availableTileSets[0];
-        }
-    }
-
-    function setAndStoreSelectedTile(tiles: TileSet) {
-        setSelectedTile(tiles);
-        window.localStorage.setItem("PreferredTileset", tiles.value);
-    }
 
     return (
         <MapContainer
@@ -155,7 +138,7 @@ const Map = (props: MapProps) => {
                         onWeatherOpacityChange={setWeatherOpacity}
                         activeTileSet={selectedTile}
                         availableTileSets={availableTileSets}
-                        onTileSetChange={setAndStoreSelectedTile}
+                        onTileSetChange={setSelectedTile}
                         refreshInterval={props.refreshInterval || 10000}
                         currentFlight={currentFlight}
                         onCurrentFlightChange={setCurrentFlight}

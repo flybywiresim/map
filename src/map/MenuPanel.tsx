@@ -3,6 +3,7 @@ import {Telex, TelexConnection} from "@flybywiresim/api-client";
 import {useMap} from "react-leaflet";
 import L, {LatLng} from "leaflet";
 import {TileSet} from "./Map";
+import useInterval from "./hooks/useInterval";
 
 type MenuPanelProps = {
     onFound?: (conn: TelexConnection) => void;
@@ -28,20 +29,14 @@ const MenuPanel = (props: MenuPanelProps) => {
     const [searchValue, setSearchValue] = useState<string>("");
     const [autocompleteList, setAutocompleteList] = useState<TelexConnection[]>([]);
 
-    // Update total flights
-    useEffect(() => {
-        const getTotalFlights = async () => {
-            try {
-                setTotalFlights(await Telex.countConnections());
-            } catch (e) {
-                console.error(e);
-            }
-        };
-
-        const interval = setInterval(() => getTotalFlights(), props.refreshInterval || 10000);
-        getTotalFlights();
-        return () => clearInterval(interval);
-    }, []);
+    useInterval(async () => {
+        try {
+            setTotalFlights(await Telex.countConnections());
+        } catch (e) {
+            console.error(e);
+        }
+    }, props.refreshInterval || 10000,
+    { runOnStart: true });
 
     // Prevent click through
     useEffect(() => {

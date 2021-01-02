@@ -2,6 +2,7 @@ import {Marker, Popup} from "react-leaflet";
 import L from "leaflet";
 import React, {useEffect, useState} from "react";
 import {Telex, TelexConnection} from "@flybywiresim/api-client";
+import useInterval from "./hooks/useInterval";
 
 type FlightMarkerProps = {
     connection?: TelexConnection | string;
@@ -40,14 +41,16 @@ const FlightMarker = (props: FlightMarkerProps) => {
         } else {
             setConnection(props.connection);
         }
-    }, [props.connection]);
 
-    useEffect(() => {
-        if (props.autoUpdate && props.connection !== undefined) {
-            const interval = setInterval(() => findAndSetConnection(props.connection), 15000);
-            return () => clearInterval(interval);
+        if (props.autoUpdate) {
+            useInterval(async () => {
+                if (props.autoUpdate && props.connection !== undefined) {
+                    await findAndSetConnection(props.connection);
+                }
+            }, 15000,
+            { runOnStart: true, additionalDeps: [props.autoUpdate]});
         }
-    }, [props.autoUpdate]);
+    }, [props.connection]);
 
     async function findAndSetConnection(connection: string | TelexConnection | undefined) {
         if (typeof connection === "undefined") {
