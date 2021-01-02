@@ -93,14 +93,8 @@ const Map = (props: MapProps) => {
     const [currentFlight, setCurrentFlight] = useState<string>(props.currentFlight || "");
     const [selectedTile, setSelectedTile] = useState<TileSet>(loadTileSet(props.forceTileset || ""));
     const [searchedFlight, setSearchedFlight] = useState<TelexConnection>();
-    const [keyMap, setKeyMap] = useState<number>(Math.random());
     const [weatherOpacity, setWeatherOpacity] = useState<number>(props.weatherOpacity || 0.2);
     const [showOthers, setShowOthers] = useState<boolean>(!props.hideOthers);
-
-    // Force map reload on tile set change
-    useEffect(() => {
-        setKeyMap(Math.random());
-    }, [selectedTile]);
 
     function loadTileSet(override?: string): TileSet {
         if (override) {
@@ -128,13 +122,12 @@ const Map = (props: MapProps) => {
     return (
         <MapContainer
             id="live-map"
-            key={keyMap}
             center={props.center || [50, 8]}
             zoom={props.zoom || 5}
             scrollWheelZoom={!props.disableScroll}
             worldCopyJump={true}
             zoomControl={false} >
-            <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} />
+            <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} key={selectedTile.value} />
             {
                 (!props.disableWeather) ?
                     <WeatherLayer opacity={weatherOpacity} /> : <></>
