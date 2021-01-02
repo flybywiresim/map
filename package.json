@@ -13,12 +13,13 @@
   "files": [
     "dist"
   ],
+  "license": "MIT",
   "main": "dist/Map.js",
   "dependencies": {
     "@flybywiresim/api-client": "^0.6.0",
     "@marfle/react-leaflet-nmscale": "^2.0.0",
     "leaflet": "^1.7.1",
-    "leaflet.polylinemeasure": "git+ssh://git@github.com/ppete2/Leaflet.PolylineMeasure.git",
+    "leaflet.polylinemeasure": "git+https://github.com/ppete2/Leaflet.PolylineMeasure.git",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-leaflet": "^3.0.2"
