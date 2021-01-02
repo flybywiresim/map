@@ -77,11 +77,14 @@ const FlightMarker = (props: FlightMarkerProps) => {
             position={[connection.location.y, connection.location.x]}
             // TODO: Need to get rid of L.divIcon. It produces twice as many DOM nodes as L.icon. Issue is the rotation.
             icon={L.divIcon({
-                iconSize: [20, 23],
-                iconAnchor: [10, 6.5],
+                iconSize: [25, 27],
+                iconAnchor: [12.5, 13.5],
                 className: 'mapIcon',
-                html: `<img alt="${connection.flight}" src="${(props.isHighlighted && !!props.highlightIcon) ? props.highlightIcon : props.icon}"
-                        style="transform-origin: center; transform: rotate(${connection.heading}deg);"/>`
+                html: `<img alt="${connection.flight}" 
+                        src="${(props.isHighlighted && !!props.highlightIcon) ? props.highlightIcon : props.icon}"
+                        style="transform-origin: center; transform: rotate(${connection.heading}deg);"
+                        width="25" height="27"
+                        />`
             })}>
             <Popup onOpen={() => props.onPopupOpen ? props.onPopupOpen() : {}} onClose={() => props.onPopupClose ? props.onPopupClose() : {}} >
                 <h1>Flight {connection.flight}</h1>
