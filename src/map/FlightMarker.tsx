@@ -79,14 +79,17 @@ const FlightMarker = (props: FlightMarkerProps) => {
             icon={L.divIcon({
                 iconSize: [25, 27],
                 iconAnchor: [12.5, 13.5],
-                className: 'mapIcon',
+                className: 'aircraft-marker',
                 html: `<img alt="${connection.flight}" 
                         src="${(props.isHighlighted && !!props.highlightIcon) ? props.highlightIcon : props.icon}"
                         style="transform-origin: center; transform: rotate(${connection.heading}deg);"
                         width="25" height="27"
                         />`
             })}>
-            <Popup onOpen={() => props.onPopupOpen ? props.onPopupOpen() : {}} onClose={() => props.onPopupClose ? props.onPopupClose() : {}} >
+            <Popup
+                closeButton={false}
+                className="aircraft-popup"
+                onOpen={() => props.onPopupOpen ? props.onPopupOpen() : {}} onClose={() => props.onPopupClose ? props.onPopupClose() : {}} >
                 <h1>Flight {connection.flight}</h1>
                 {
                     (connection.origin && connection.destination) ?

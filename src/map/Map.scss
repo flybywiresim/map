@@ -81,9 +81,13 @@ $popup: $tooltip;
     }
   }
 
-  .leaflet-popup-content-wrapper,
-  .leaflet-popup-tip {
-    background-color: $popup;
+  .aircraft-popup {
+    margin-bottom: 35px;
+
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+      background-color: $popup;
+    }
   }
 
   .airport-tooltip {
