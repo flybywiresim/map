@@ -51,8 +51,10 @@ const MenuPanel = (props: MenuPanelProps) => {
         }
     }, [mapRef]);
 
-    async function handleSearch(flyTo?: boolean) {
-        if (!searchValue) {
+    async function handleSearch(flyTo?: boolean, searchOverride?: string) {
+        const search = searchOverride || searchValue;
+
+        if (!search) {
             if (props.onReset) {
                 props.onReset();
             }
@@ -60,21 +62,30 @@ const MenuPanel = (props: MenuPanelProps) => {
         }
 
         try {
-            const res = await Telex.findConnections(searchValue);
+            const res = await Telex.findConnections(search);
 
             if (res.length === 0) {
                 if (props.onNotFound) {
                     props.onNotFound();
                 }
             } else if (res.length >= 1) {
-                setAutocompleteList(res);
+                setAutocompleteList(res.sort((a, b) => {
+                    if (a.flight < b.flight) {
+                        return -1;
+                    }
+                    if (a.flight > b.flight) {
+                        return 1;
+                    }
 
-                if (res[0].flight === searchValue) {
+                    return 0;
+                }));
+
+                if (res[0].flight === search) {
                     if (props.onFound) {
                         props.onFound(res[0]);
                     }
 
-                    if (flyTo === undefined || flyTo) {
+                    if (flyTo === undefined || flyTo || res.length === 1) {
                         const zoom = Math.max(10, 15 - res[0].trueAltitude * 5 / 12000);
                         console.log(zoom);
 
@@ -115,7 +126,7 @@ const MenuPanel = (props: MenuPanelProps) => {
                     placeholder="Flight Number"
                     onChange={event => {
                         setSearchValue(event.target.value.toString());
-                        handleSearch(false);
+                        handleSearch(false, event.target.value.toString());
                     }}
                     onKeyPress={event => event.key === "Enter" ? handleSearch() : {}}
                     onFocus={(event) => event.target.select()}
@@ -136,16 +147,7 @@ const MenuPanel = (props: MenuPanelProps) => {
                 </button>
                 <datalist id="autocomplete">
                     {
-                        autocompleteList.sort((a, b) => {
-                            if (a.flight < b.flight) {
-                                return -1;
-                            }
-                            if (a.flight > b.flight) {
-                                return 1;
-                            }
-
-                            return 0;
-                        }).map(connection => !searchValue || connection.flight.startsWith(searchValue) ?
+                        autocompleteList.map(connection => !searchValue || connection.flight.startsWith(searchValue) ?
                             <option key={connection.id} value={connection.flight}/> : <></>)
                     }
                 </datalist>
