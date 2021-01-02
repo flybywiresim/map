@@ -10,7 +10,7 @@ const WeatherLayer = (props: WeatherLayerProps) => {
 
     useEffect(() => {
         getNewestLayer();
-    }, [props.opacity]);
+    }, []);
 
     async function getNewestLayer() {
         await fetch("https://api.rainviewer.com/public/maps.json")

@@ -41,7 +41,7 @@ const MenuPanel = (props: MenuPanelProps) => {
         const interval = setInterval(() => getTotalFlights(), props.refreshInterval || 10000);
         getTotalFlights();
         return () => clearInterval(interval);
-    });
+    }, []);
 
     // Prevent click through
     useEffect(() => {
@@ -212,7 +212,7 @@ const MenuPanel = (props: MenuPanelProps) => {
                             />
                         </> : <></>
                 }
-                <p className="active-flights">Active Flights<br/><span>{totalFlights}</span></p>
+                <p className="active-flights">Active Flights<br/><span>{totalFlights.toString()}</span></p>
             </div>
         </div>
     );
