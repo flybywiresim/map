@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {TileLayer, MapContainer, ZoomControl} from "react-leaflet";
+import { NmScale } from '@marfle/react-leaflet-nmscale';
 import {ControlPosition, LatLng} from "leaflet";
 import WeatherLayer from "./WeatherLayer";
 import {TelexConnection} from "@flybywiresim/api-client";
@@ -170,6 +171,7 @@ const Map = (props: MapProps) => {
                     : <></>
             }
             <ZoomControl position={props.zoomPosition || "bottomright"} />
+            <NmScale />
         </MapContainer>
     );
 };
