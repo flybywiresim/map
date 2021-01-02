@@ -1,8 +1,8 @@
 import {Airport, AirportResponse, TelexConnection} from "@flybywiresim/api-client";
 import React, {useEffect, useState} from "react";
 
-import ArrivalWhite from './icons/arrival_white.png';
-import DepartureWhite from './icons/departure_white.png';
+import ArrivalWhite from './res/icons/arrival_white.png';
+import DepartureWhite from './res/icons/departure_white.png';
 import {FeatureGroup, Marker, Tooltip} from "react-leaflet";
 import L from "leaflet";
 

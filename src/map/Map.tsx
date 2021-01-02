@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {TileLayer, MapContainer, ZoomControl} from "react-leaflet";
-
+import {ControlPosition, LatLng} from "leaflet";
+import WeatherLayer from "./WeatherLayer";
 import {TelexConnection} from "@flybywiresim/api-client";
 
 import FlightsLayer from './FlightsLayer';
@@ -9,14 +10,15 @@ import MenuPanel from './MenuPanel';
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
-import ArrivalWhite from './icons/arrival_white.png';
-import ArrivalGray from './icons/arrival_gray.png';
-import DepartureWhite from './icons/departure_white.png';
-import DepartureGray from './icons/arrival_gray.png';
-import PlaneCyan from './icons/plane_cyan.png';
-import PlaneBlue from './icons/plane_blue.png';
-import {ControlPosition, LatLng} from "leaflet";
-import WeatherLayer from "./WeatherLayer";
+import ArrivalWhite from './res/icons/arrival_white.png';
+import ArrivalGray from './res/icons/arrival_gray.png';
+import DepartureWhite from './res/icons/departure_white.png';
+import DepartureGray from './res/icons/arrival_gray.png';
+import PlaneCyan from './res/icons/plane_cyan.png';
+import PlaneBlue from './res/icons/plane_blue.png';
+import CartoDarkPreview from './res/previews/carto-dark.png';
+import CartoLightPreview from './res/previews/carto-light.png';
+import OsmPreview from './res/previews/osm.png';
 
 type MapProps = {
     disableMenu?: boolean,
@@ -43,6 +45,7 @@ export type TileSet = {
     planeIconHighlight: string,
     departureIcon: string,
     arrivalIcon: string,
+    previewImageUrl: string,
 }
 
 const Map = (props: MapProps) => {
@@ -57,6 +60,7 @@ const Map = (props: MapProps) => {
             planeIconHighlight: PlaneBlue,
             departureIcon: DepartureWhite,
             arrivalIcon: ArrivalWhite,
+            previewImageUrl: CartoDarkPreview,
         },
         {
             id: 2,
@@ -68,6 +72,7 @@ const Map = (props: MapProps) => {
             planeIconHighlight: PlaneBlue,
             departureIcon: DepartureGray,
             arrivalIcon: ArrivalGray,
+            previewImageUrl: CartoLightPreview,
         },
         {
             id: 3,
@@ -79,6 +84,7 @@ const Map = (props: MapProps) => {
             planeIconHighlight: PlaneBlue,
             departureIcon: DepartureGray,
             arrivalIcon: ArrivalGray,
+            previewImageUrl: OsmPreview,
         }
     ];
 
