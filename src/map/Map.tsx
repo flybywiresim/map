@@ -127,7 +127,7 @@ const Map = (props: MapProps) => {
             scrollWheelZoom={!props.disableScroll}
             worldCopyJump={true}
             zoomControl={false} >
-            <TileLayer attribution={selectedTile.attribution} url={selectedTile.url} key={selectedTile.value} />
+            <TileLayer zIndex={0} attribution={selectedTile.attribution} url={selectedTile.url} key={selectedTile.value} />
             {
                 (!props.disableWeather) ?
                     <WeatherLayer opacity={weatherOpacity} /> : <></>
