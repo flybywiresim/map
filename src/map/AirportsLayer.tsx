@@ -81,6 +81,7 @@ const AirportsLayer = (props: AirportsLayerProps) => {
                 displayedAirports.map(arptToShow =>
                     <Marker
                         key={arptToShow.airport.icao + '-' + arptToShow.airportType}
+                        zIndexOffset={9999}
                         position={[arptToShow.airport.lat, arptToShow.airport.lon]}
                         icon={L.icon({
                             iconSize: [26, 26],
