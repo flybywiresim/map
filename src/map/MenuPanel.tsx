@@ -67,7 +67,10 @@ const MenuPanel = (props: MenuPanelProps) => {
                     }
 
                     if (flyTo === undefined || flyTo) {
-                        mapRef.flyTo(new LatLng(res[0].location.y, res[0].location.x), 7);
+                        const zoom = Math.max(10, 15 - res[0].trueAltitude * 5 / 12000);
+                        console.log(zoom);
+
+                        mapRef.flyTo(new LatLng(res[0].location.y, res[0].location.x), zoom);
                     }
                 }
             }
