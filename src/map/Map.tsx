@@ -14,7 +14,7 @@ import "./Map.scss";
 import ArrivalWhite from './res/icons/arrival_white.png';
 import ArrivalGray from './res/icons/arrival_gray.png';
 import DepartureWhite from './res/icons/departure_white.png';
-import DepartureGray from './res/icons/arrival_gray.png';
+import DepartureGray from './res/icons/departure_gray.png';
 import PlaneCyan from './res/icons/plane_cyan.png';
 import PlaneBlue from './res/icons/plane_blue.png';
 import CartoDarkPreview from './res/previews/carto-dark.png';
