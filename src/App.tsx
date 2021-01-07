@@ -4,7 +4,7 @@ import './App.scss';
 
 function App() {
     return (
-        <div className="App">
+        <div className="App" style={{height: "100vh", width: "100vw"}}>
             <Map />
         </div>
     );
