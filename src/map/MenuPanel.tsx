@@ -178,7 +178,7 @@ const MenuPanel = (props: MenuPanelProps) => {
                                             type="radio"
                                             name="tileset"
                                             value={tileSet.value}
-                                            defaultChecked={tileSet.value === props.activeTileSet?.value} />
+                                            defaultChecked={props.activeTileSet && tileSet.value === props.activeTileSet.value} />
                                         <img src={tileSet.previewImageUrl} alt={tileSet.name} width="60rem" />
                                     </label>
                                 )

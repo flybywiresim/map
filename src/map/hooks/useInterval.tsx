@@ -9,7 +9,7 @@ function useInterval(callback: () => void, delay: number | null, options?: UseIn
     const savedCallback = useRef<() => void | null>();
 
     const deps = [delay];
-    if (options?.additionalDeps) {
+    if (options && options.additionalDeps) {
         deps.push(...options.additionalDeps);
     }
 
@@ -21,12 +21,12 @@ function useInterval(callback: () => void, delay: number | null, options?: UseIn
     // Set up the interval.
     useEffect(() => {
         function tick() {
-            if (typeof savedCallback?.current !== 'undefined') {
-                savedCallback?.current();
+            if (savedCallback && typeof savedCallback.current !== 'undefined') {
+                savedCallback.current();
             }
         }
 
-        if (options?.runOnStart) {
+        if (options && options.runOnStart) {
             tick();
         }
 
