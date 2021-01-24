@@ -16,7 +16,7 @@
   "license": "MIT",
   "main": "dist/Map.js",
   "dependencies": {
-    "@flybywiresim/api-client": "^0.6.0",
+    "@flybywiresim/api-client": "^0.7.1",
     "@marfle/react-leaflet-nmscale": "^2.0.0",
     "leaflet": "^1.7.1",
     "leaflet.polylinemeasure": "git+https://github.com/ppete2/Leaflet.PolylineMeasure.git",
@@ -44,11 +44,7 @@
     "node-sass": "^4.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "prepare": "babel src/map --out-dir dist --extensions .tsx --copy-files"
+    "build": "babel src/map --out-dir dist --extensions .tsx --copy-files && tsc"
   },
   "eslintConfig": {
     "extends": [
