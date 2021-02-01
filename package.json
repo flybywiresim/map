@@ -16,7 +16,7 @@
   "license": "MIT",
   "main": "dist/Map.js",
   "dependencies": {
-    "@flybywiresim/api-client": "^0.7.1",
+    "@flybywiresim/api-client": "^0.8.0",
     "@marfle/react-leaflet-nmscale": "^2.0.0",
     "leaflet": "^1.7.1",
     "leaflet.polylinemeasure": "git+https://github.com/ppete2/Leaflet.PolylineMeasure.git",

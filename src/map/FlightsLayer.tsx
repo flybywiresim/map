@@ -62,15 +62,15 @@ const FlightsLayer = (props: FlightsProps) => {
 
         try {
             if (props.hideOthers) {
-                const flt = await Telex.findConnections(props.currentFlight);
+                const result = await Telex.findConnections(props.currentFlight);
 
-                if (flt.length !== 1 && flt[0].flight !== props.currentFlight) {
-                    console.error("Current FLT NBR returns more than 1 result");
+                if (!result.fullMatch) {
+                    console.error('Current FLT NBR did not return a full match');
                     return;
                 }
 
-                flights.push(flt[0]);
-                map.flyTo({lat: flt[0].location.y, lng: flt[0].location.x});
+                flights.push(result.fullMatch);
+                map.flyTo({lat: result.fullMatch.location.y, lng: result.fullMatch.location.x});
             } else {
                 flights = await Telex.fetchAllConnections(apiBounds, staged ? setData : undefined);
             }

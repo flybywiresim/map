@@ -58,32 +58,32 @@ const MenuPanel = (props: MenuPanelProps) => {
 
         try {
             const res = await Telex.findConnections(search);
+            setAutocompleteList(res.matches.sort((a, b) => {
+                if (a.flight < b.flight) {
+                    return -1;
+                }
+                if (a.flight > b.flight) {
+                    return 1;
+                }
 
-            if (res.length === 0) {
+                return 0;
+            }));
+
+            if (!res.fullMatch) {
                 if (props.onNotFound) {
                     props.onNotFound();
                 }
-            } else if (res.length >= 1) {
-                setAutocompleteList(res.sort((a, b) => {
-                    if (a.flight < b.flight) {
-                        return -1;
-                    }
-                    if (a.flight > b.flight) {
-                        return 1;
-                    }
+                return;
+            }
 
-                    return 0;
-                }));
+            if (res.fullMatch.flight === search) {
+                if (props.onFound) {
+                    props.onFound(res.fullMatch);
+                }
 
-                if (res[0].flight === search) {
-                    if (props.onFound) {
-                        props.onFound(res[0]);
-                    }
-
-                    if (flyTo === undefined || flyTo || res.length === 1) {
-                        const zoom = Math.max(10, 15 - res[0].trueAltitude * 5 / 12000);
-                        mapRef.flyTo(new LatLng(res[0].location.y, res[0].location.x), zoom);
-                    }
+                if (flyTo === undefined || flyTo || res.matches.length === 1) {
+                    const zoom = Math.max(10, 15 - res.fullMatch.trueAltitude * 5 / 12000);
+                    mapRef.flyTo(new LatLng(res.fullMatch.location.y, res.fullMatch.location.x), zoom);
                 }
             }
         } catch (e) {
