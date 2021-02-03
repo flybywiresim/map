@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FeatureGroup, useMapEvents } from 'react-leaflet';
 import { LatLngBounds } from 'leaflet';
 
@@ -6,6 +6,7 @@ import { Telex, TelexConnection, Bounds } from '@flybywiresim/api-client';
 import AirportsLayer from './AirportsLayer';
 import FlightMarker from './FlightMarker';
 import useInterval from '../hooks/useInterval';
+import { CurrentFlight, CurrentFLightCallback } from './Map.types';
 
 export type FlightsLayerProps = {
     // eslint-disable-next-line no-unused-vars
@@ -14,7 +15,7 @@ export type FlightsLayerProps = {
     planeIconHighlight: string,
     departureIcon: string,
     arrivalIcon: string,
-    currentFlight: string,
+    currentFlight: CurrentFLightCallback,
     searchedFlight?: TelexConnection,
     refreshInterval: number,
     hideOthers?: boolean,
@@ -36,14 +37,23 @@ const FlightsLayer = (props: FlightsLayerProps): JSX.Element => {
     const [data, setData] = useState<TelexConnection[]>([]);
     const [bounds, setBounds] = useState<LatLngBounds>(map.getBounds());
     const [selectedConnection, setSelectedConnection] = useState<TelexConnection | null>(null);
+    const [currentFlight, setCurrentFlight] = useState<CurrentFlight | null>(null);
 
     useInterval(async () => {
         await getLocationData(false, map.getBounds());
     }, props.refreshInterval || 10000,
-    { runOnStart: true, additionalDeps: [props.hideOthers, bounds] });
+    { runOnStart: true, additionalDeps: [props.hideOthers] });
+
+    useEffect(() => {
+        if (!props.hideOthers) {
+            getLocationData(false, bounds);
+        }
+    }, [bounds]);
 
     async function getLocationData(staged = false, bounds?: LatLngBounds) {
         setIsUpdating(true);
+
+        let flights: TelexConnection[] = [];
 
         let apiBounds: Bounds = {
             north: 90,
@@ -60,19 +70,32 @@ const FlightsLayer = (props: FlightsLayerProps): JSX.Element => {
             };
         }
 
-        let flights: TelexConnection[] = [];
-
         try {
+            if (props.currentFlight) {
+                const currentFlight = await props.currentFlight();
+
+                setCurrentFlight(currentFlight);
+            }
+
             if (props.hideOthers) {
-                const result = await Telex.findConnections(props.currentFlight);
-
-                if (!result.fullMatch) {
-                    console.error('Current FLT NBR did not return a full match');
-                    return;
-                }
-
-                flights.push(result.fullMatch);
-                map.flyTo({ lat: result.fullMatch.location.y, lng: result.fullMatch.location.x });
+                flights.push({
+                    id: '',
+                    isActive: true,
+                    firstContact: new Date(),
+                    lastContact: new Date(),
+                    flight: currentFlight.flightNumber,
+                    location: {
+                        x: currentFlight.longitude,
+                        y: currentFlight.latitude,
+                    },
+                    trueAltitude: currentFlight.altitude,
+                    heading: currentFlight.heading,
+                    freetextEnabled: true,
+                    aircraftType: currentFlight.aircraftType,
+                    origin: currentFlight.origin,
+                    destination: currentFlight.destination,
+                });
+                map.flyTo({ lat: currentFlight.latitude, lng: currentFlight.longitude });
             } else {
                 flights = await Telex.fetchAllConnections(apiBounds, staged ? setData : undefined);
             }
@@ -96,9 +119,9 @@ const FlightsLayer = (props: FlightsLayerProps): JSX.Element => {
                         connection={connection}
                         icon={props.planeIcon}
                         highlightIcon={props.planeIconHighlight}
-                        isHighlighted={(props.searchedFlight && props.searchedFlight.flight === connection.flight) || props.currentFlight === connection.flight}
+                        isHighlighted={(props.searchedFlight && props.searchedFlight.flight === connection.flight) || currentFlight?.flightNumber === connection.flight}
                         onPopupOpen={() => setSelectedConnection(connection)}
-                        onPopupClose={() => setSelectedConnection(null)} />
+                        onPopupClose={() => setSelectedConnection(null)}/>
                 )
             }
             {
@@ -106,7 +129,7 @@ const FlightsLayer = (props: FlightsLayerProps): JSX.Element => {
                     <AirportsLayer
                         connection={selectedConnection}
                         departureIcon={props.departureIcon}
-                        arrivalIcon={props.arrivalIcon} /> : ''
+                        arrivalIcon={props.arrivalIcon}/> : ''
             }
         </FeatureGroup>
     );

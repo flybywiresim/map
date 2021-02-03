@@ -58,7 +58,11 @@ const AirportsLayer = (props: AirportsLayerProps): JSX.Element => {
         for (const search of searches) {
             if (search.icao) {
                 try {
-                    airports.push(await getAirport(search.icao, search.airportType));
+                    const arpt = await getAirport(search.icao, search.airportType);
+
+                    if (arpt.airport.lon && arpt.airport.lat) {
+                        airports.push();
+                    }
                 } catch (e) {
                     console.error(e);
                 }

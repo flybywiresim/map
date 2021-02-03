@@ -7,7 +7,7 @@ export type MapProps = Partial<{
     disableWeather?: boolean,
     weatherOpacity?: number,
     forceTileset?: string,
-    currentFlight?: string,
+    currentFlight?: CurrentFLightCallback,
     disableScroll?: boolean,
     refreshInterval?: number,
     hideOthers?: boolean,
@@ -28,3 +28,16 @@ export type TileSet = {
     arrivalIcon: string,
     previewImageUrl: string,
 }
+
+export class CurrentFlight {
+    flightNumber: string;
+    latitude: number;
+    longitude: number;
+    altitude: number;
+    heading: number;
+    aircraftType: string;
+    origin: string;
+    destination: string;
+}
+
+export type CurrentFLightCallback = () => (Promise<CurrentFlight> | CurrentFlight);

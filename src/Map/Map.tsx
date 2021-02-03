@@ -64,7 +64,6 @@ const Map = (props: MapProps): JSX.Element => {
         }
     ];
 
-    const [currentFlight, setCurrentFlight] = useState<string>(props.currentFlight || '');
     const [selectedTile, setSelectedTile] = useLocalStorage<TileSet>(
         'tileSet',
         availableTileSets[0],
@@ -95,7 +94,7 @@ const Map = (props: MapProps): JSX.Element => {
                         planeIconHighlight={selectedTile.planeIconHighlight}
                         departureIcon={selectedTile.departureIcon}
                         arrivalIcon={selectedTile.arrivalIcon}
-                        currentFlight={currentFlight}
+                        currentFlight={props.currentFlight}
                         searchedFlight={searchedFlight}
                         refreshInterval={props.refreshInterval || 10000}
                         hideOthers={!showOthers}
@@ -113,8 +112,6 @@ const Map = (props: MapProps): JSX.Element => {
                         availableTileSets={availableTileSets}
                         onTileSetChange={setSelectedTile}
                         refreshInterval={props.refreshInterval || 10000}
-                        currentFlight={currentFlight}
-                        onCurrentFlightChange={setCurrentFlight}
                         showOthers={showOthers}
                         onShowOthersChange={setShowOthers}
                     />

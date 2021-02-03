@@ -18,9 +18,6 @@ type MenuPanelProps = {
     // eslint-disable-next-line no-unused-vars
     onTileSetChange?: (tileSet: TileSet) => void;
     refreshInterval?: number;
-    currentFlight?: string;
-    // eslint-disable-next-line no-unused-vars
-    onCurrentFlightChange?: (flight: string) => void;
     showOthers?: boolean;
     // eslint-disable-next-line no-unused-vars
     onShowOthersChange?: (show: boolean) => void;
@@ -190,17 +187,6 @@ const MenuPanel = (props: MenuPanelProps): JSX.Element => {
                                 )
                             }
                         </div> : <></>
-                }
-                {
-                    props.onCurrentFlightChange ?
-                        <input
-                            type="text"
-                            placeholder="Current Flight Number"
-                            onChange={event => props.onCurrentFlightChange ? props.onCurrentFlightChange(event.target.value.toString()) : {}}
-                            onBlur={event => props.onCurrentFlightChange ? props.onCurrentFlightChange(event.target.value.toString()) : {}}
-                            onFocus={(event) => event.target.select()}
-                            value={props.currentFlight}
-                        /> : <></>
                 }
                 {
                     props.onShowOthersChange ?
