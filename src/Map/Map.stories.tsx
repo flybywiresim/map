@@ -12,7 +12,7 @@ export default {
 };
 
 let lat = 1, lng = 1;
-const currentFlight = (): CurrentFlight => {
+const currentFlight = async (): Promise<CurrentFlight> => {
     lat *= -1;
     lng *= -1;
     return {
