@@ -19,6 +19,7 @@ export type FlightsLayerProps = {
     searchedFlight?: TelexConnection,
     refreshInterval: number,
     hideOthers?: boolean,
+    followCurrent?: boolean,
 }
 
 const FlightsLayer = (props: FlightsLayerProps): JSX.Element => {
@@ -95,7 +96,10 @@ const FlightsLayer = (props: FlightsLayerProps): JSX.Element => {
                     origin: currentFlight.origin,
                     destination: currentFlight.destination,
                 });
-                map.flyTo({ lat: currentFlight.latitude, lng: currentFlight.longitude });
+
+                if (props.followCurrent || props.followCurrent == undefined) {
+                    map.flyTo({ lat: currentFlight.latitude, lng: currentFlight.longitude });
+                }
             } else {
                 flights = await Telex.fetchAllConnections(apiBounds, staged ? setData : undefined);
             }

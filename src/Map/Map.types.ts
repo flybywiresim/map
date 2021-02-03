@@ -3,17 +3,18 @@ import { ControlPosition, LatLng } from 'leaflet';
 
 export type MapProps = Partial<{
     disableMenu?: boolean,
-    disableFlights?: boolean,
-    disableWeather?: boolean,
-    weatherOpacity?: number,
-    forceTileset?: string,
-    currentFlight?: CurrentFLightCallback,
-    disableScroll?: boolean,
-    refreshInterval?: number,
-    hideOthers?: boolean,
-    center?: LatLng,
-    zoom?: number,
-    zoomPosition?: ControlPosition,
+    disableFlights: boolean,
+    disableWeather: boolean,
+    weatherOpacity: number,
+    forceTileset: string,
+    currentFlight: CurrentFLightCallback,
+    disableScroll: boolean,
+    refreshInterval: number,
+    hideOthers: boolean,
+    center: LatLng,
+    zoom: number,
+    zoomPosition: ControlPosition,
+    followCurrent: boolean,
 }>
 
 export type TileSet = {

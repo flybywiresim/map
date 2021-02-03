@@ -31,3 +31,4 @@ export const Default: React.FC = () => <div style={{ width: '100vw', height: '10
 export const ForceCartoLight: React.FC = () => <div style={{ width: '100vw', height: '100vh' }}><Map forceTileset={'carto-light'} /></div>;
 export const NoMenu: React.FC = () => <div style={{ width: '100vw', height: '100vh' }}><Map disableMenu={true} /></div>;
 export const OnlyCurrentFlight: React.FC = () => <div style={{ width: '100vw', height: '100vh' }}><Map currentFlight={currentFlight} hideOthers={true} refreshInterval={1000} /></div>;
+export const OnlyCurrentFlightNoFollow: React.FC = () => <div style={{ width: '100vw', height: '100vh' }}><Map currentFlight={currentFlight} hideOthers={true} refreshInterval={1000} followCurrent={false} /></div>;

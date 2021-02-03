@@ -98,6 +98,7 @@ const Map = (props: MapProps): JSX.Element => {
                         searchedFlight={searchedFlight}
                         refreshInterval={props.refreshInterval || 10000}
                         hideOthers={!showOthers}
+                        followCurrent={props.followCurrent}
                     /> : <></>
             }
             {
