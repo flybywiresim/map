@@ -21,9 +21,9 @@ const currentFlight = (): CurrentFlight => {
         longitude: lng,
         altitude: Math.floor(Math.random() * 39000),
         heading: Math.random() * 360,
-        aircraftType: 'string',
-        origin: 'string',
-        destination: 'string',
+        aircraftType: 'A32NX',
+        origin: 'KLAX',
+        destination: 'KSFO',
     };
 };
 
