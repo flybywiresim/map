@@ -72,33 +72,30 @@ const FlightsLayer = (props: FlightsLayerProps): JSX.Element => {
         }
 
         try {
-            if (props.currentFlight) {
-                const currentFlight = await props.currentFlight();
+            if (props.hideOthers && props.currentFlight) {
+                const flight = await props.currentFlight();
+                setCurrentFlight(flight);
 
-                setCurrentFlight(currentFlight);
-            }
-
-            if (props.hideOthers) {
                 flights.push({
                     id: '',
                     isActive: true,
                     firstContact: new Date(),
                     lastContact: new Date(),
-                    flight: currentFlight.flightNumber,
+                    flight: flight.flightNumber,
                     location: {
-                        x: currentFlight.longitude,
-                        y: currentFlight.latitude,
+                        x: flight.longitude,
+                        y: flight.latitude,
                     },
-                    trueAltitude: currentFlight.altitude,
-                    heading: currentFlight.heading,
+                    trueAltitude: flight.altitude,
+                    heading: flight.heading,
                     freetextEnabled: true,
-                    aircraftType: currentFlight.aircraftType,
-                    origin: currentFlight.origin,
-                    destination: currentFlight.destination,
+                    aircraftType: flight.aircraftType,
+                    origin: flight.origin,
+                    destination: flight.destination,
                 });
 
                 if (props.followCurrent || props.followCurrent == undefined) {
-                    map.flyTo({ lat: currentFlight.latitude, lng: currentFlight.longitude });
+                    map.flyTo({ lat: flight.latitude, lng: flight.longitude });
                 }
             } else {
                 flights = await Telex.fetchAllConnections(apiBounds, staged ? setData : undefined);
